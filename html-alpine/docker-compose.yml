@@ -1,0 +1,10 @@
+version: '3'
+services:
+  web:
+    build: .
+    image: nginx-html-alpine
+    container_name: nginx-html-alpine-container
+    volumes:
+      - ./html:/usr/share/nginx/html
+    ports:
+      - 4321:80

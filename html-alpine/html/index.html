@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dracula">
+	<head>
+		<meta charset="UTF-8" />
+		<title>标题</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="网页描述" />
+		<meta name="keywords" content="关键词1, 关键词2, 关键词3" />
+		<meta name="author" content="ovaphlow" />
+        <link href="./style.css" rel="stylesheet" />
+		<script src="https://unpkg.com/alpinejs@3.13.10/dist/cdn.min.js" defer></script>
+        <script src="main.js" type="module"></script>
+        <script src="components.js"></script>
+	</head>
+	<body class="flex flex-col" x-data>
+        <header x-data="components" x-html="header"></header>
+        <main class="flex-1 px-4 mt-4">
+            <div class="flex flex-row justify-around">
+                <button @click="$store.character.prepLevelUp()" class="btn btn-primary btn-wide">升级</button>
+                <button @click="$store.character.reset()" class="btn btn-secondary btn-outline btn-wide">重置</button>
+            </div>
+            <div class="divider divider-neutral">角色信息</div>
+            <div class="stats shadow flex flex-row">
+                <div class="stat place-items-center">
+                    <div class="stat-title">等级</div>
+                    <div x-text="$store.character.level" class="stat-value">&nbsp;</div>
+                    <div class="stat-desc"></div>
+                </div>
+                <div x-show="$store.character.race.length > 0" class="stat place-items-center">
+                    <div class="stat-title">种族</div>
+                    <div x-text="$store.character.race[0]" class="stat-value"></div>
+                    <div x-text="$store.character.race[1]" class="stat-desc"></div>
+                </div>
+            </div>
+        </main>
+        <footer x-data="components" x-html="footer"></footer>
+
+        <dialog id="pick-race" class="modal">
+            <div class="modal-box">
+                <h3 class="font-bold text-lg">选择种族</h3>
+                <p class="py-4">
+                <div id="race-list" class="flex flex-wrap gap-y-8">
+                    <template x-for="race in $store.character.raceList">
+                        <div onclick="clickRace(this)" class="flex flex-col items-center">
+                            <div class="avatar offline">
+                                <div class="w-24 rounded-full">
+                                    <img x-bind:src="race.image" class="w-24" />
+                                </div>
+                            </div>
+                            <span x-text="race.title" class="text-center"></span>
+                        </div>
+                    </template>
+                </div>
+                </p>
+                <div x-show="$store.character.stage.race && $store.character.stage.race.length > 0" class="modal-action">
+                    <form method="dialog">
+                        <button @click="$store.character.postLevelUp()" class="btn">Close</button>
+                    </form>
+                </div>
+            </div>
+        </dialog>
+
+        <dialog id="pick-class" class="modal">
+            <div class="modal-box">
+                <h3 class="font-bold text-lg">选择职业</h3>
+                <p class="py-4">
+                <div id="class-list" class="flex flex-wrap gap-y-8">
+                    <template x-for="class in $store.character.classList">
+                        <div onclick="clickRace(this)" class="flex flex-col items-center">
+                            <div class="avatar offline">
+                                <div class="w-24 rounded-full">
+                                    <img x-bind:src="class.image" class="w-24" />
+                                </div>
+                            </div>
+                            <span x-text="class.title" class="text-center"></span>
+                        </div>
+                    </template>
+                </div>
+                </p>
+                <div class="modal-action">
+                    <form method="dialog">
+                        <button class="btn">Close</button>
+                    </form>
+                </div>
+            </div>
+        </dialog>
+
+        <script>
+            function clickRace(element) {
+                element.parentNode.childNodes.forEach((node) => {
+                    if (node.nodeName === "DIV") {
+                        node.querySelector(":scope > div").className = "avatar offline"
+                    }
+                })
+                element.querySelector(":scope > div").className = "avatar online"
+                Alpine.store("character").stage.race = [element.querySelector(":scope > span").innerHTML]
+            }
+        </script>
+	</body>
+</html>
