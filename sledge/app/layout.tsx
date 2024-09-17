@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { IconHome, IconMap, IconNewspaper, IconUser } from './components/Icons'
+import { IconHome, IconMap, IconNewspaper, IconUser } from '../components/Icons'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -15,23 +15,33 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <html lang="zhCN" data-theme="light">
             <body className="flex flex-col">
                 <main className="flex-1">{children}</main>
-                <footer className="flex-none bg-base-200">
-                    <div className="flex justify-around p-3">
-                        <Link href="#">
-                            <IconHome size={'2.5rem'} color={iconColor} />
-                        </Link>
-                        <Link href="#">
-                            <IconNewspaper size={'2.5rem'} color={iconColor} />
-                        </Link>
-                        <Link href="#">
-                            <IconMap size={'2.5rem'} color={iconColor} />
-                        </Link>
-                        <Link href="#">
-                            <IconUser size={'2.5rem'} color={iconColor} />
-                        </Link>
-                    </div>
-                </footer>
+                <Footer />
             </body>
         </html>
+    )
+}
+
+function Footer() {
+    return (
+        <footer className="flex-none bg-base-200">
+            <div className="flex justify-around p-3">
+                <Link href="#" className="flex flex-col items-center">
+                    <IconHome size={'2.5rem'} color={iconColor} />
+                    <span className="text-sm font-bold text-slate-500">首页</span>
+                </Link>
+                <Link href="#" className="flex flex-col items-center">
+                    <IconNewspaper size={'2.5rem'} color={iconColor} />
+                    <span className="text-sm font-bold text-slate-500">旅游攻略</span>
+                </Link>
+                <Link href="#" className="flex flex-col items-center">
+                    <IconMap size={'2.5rem'} color={iconColor} />
+                    <span className="text-sm font-bold text-slate-500">导览</span>
+                </Link>
+                <Link href="#" className="flex flex-col items-center">
+                    <IconUser size={'2.5rem'} color={iconColor} />
+                    <span className="text-sm font-bold text-slate-500">用户</span>
+                </Link>
+            </div>
+        </footer>
     )
 }
