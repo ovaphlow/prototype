@@ -1,4 +1,4 @@
-import { IconTicket } from "@/components/Icons"
+import { IconBed, IconCar, IconRoute, IconTicket, IconUtensils } from "@/components/Icons"
 
 export default function Home() {
     return (
@@ -11,19 +11,40 @@ export default function Home() {
 }
 
 function QuickNav() {
+    const iconSize = '2.1rem'
     const iconColor = 'rgb(167 139 250)'
 
     return (
         <div className="flex justify-around p-3">
             <div className="flex flex-col items-center">
-                <div className="bg-base-300 rounded-full w-12 h-12 items-center justify-center">
-                    <IconTicket size={'2rem'} color={iconColor} />
+                <div className="bg-base-300 rounded-full w-12 h-12 flex items-center justify-center">
+                    <IconTicket size={iconSize} color={iconColor} />
                 </div>
                 <span className="text-sm">景区票务</span>
             </div>
             <div className="flex flex-col items-center">
-                <div className="bg-base-300 rounded-full w-12 h-12 flex items-center justify-center"></div>
+                <div className="bg-base-300 rounded-full w-12 h-12 flex items-center justify-center">
+                    <IconBed size={iconSize} color={iconColor} />
+                </div>
                 <span className="text-sm">酒店民宿</span>
+            </div>
+            <div className="flex flex-col items-center">
+                <div className="bg-base-300 rounded-full w-12 h-12 flex items-center justify-center">
+                    <IconUtensils size={iconSize} color={iconColor} />
+                </div>
+                <span className="text-sm">特色美食</span>
+            </div>
+            <div className="flex flex-col items-center">
+                <div className="bg-base-300 rounded-full w-12 h-12 flex items-center justify-center">
+                    <IconCar size={iconSize} color={iconColor} />
+                </div>
+                <span className="text-sm">交通出行</span>
+            </div>
+            <div className="flex flex-col items-center">
+                <div className="bg-base-300 rounded-full w-12 h-12 flex items-center justify-center">
+                    <IconRoute size={iconSize} color={iconColor} />
+                </div>
+                <span className="text-sm">精品线路</span>
             </div>
         </div>
     )
