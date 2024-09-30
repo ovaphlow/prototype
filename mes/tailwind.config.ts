@@ -1,3 +1,4 @@
+import daysyui from "daisyui"
 import type { Config } from "tailwindcss"
 
 const config: Config = {
@@ -6,14 +7,10 @@ const config: Config = {
         "./components/**/*.{js,ts,jsx,tsx,mdx}",
         "./app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
-    theme: {
-        extend: {
-            colors: {
-                background: "var(--background)",
-                foreground: "var(--foreground)",
-            },
-        },
+    plugins: [daysyui],
+    daisyui: {
+        themes: ["emerald"],
     },
-    plugins: [],
 }
+
 export default config
