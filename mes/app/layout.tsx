@@ -32,13 +32,69 @@ export default function RootLayout({
                             <h2 className="menu-title">系统</h2>
                             <ul>
                                 <li>
-                                    <a>用户</a>
+                                    <a>组织结构</a>
                                 </li>
                                 <li>
-                                    <a>部门</a>
+                                    <a>人员及角色</a>
                                 </li>
                                 <li>
-                                    <a>角色</a>
+                                    <a>设备资源</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <h2 className="menu-title">产品</h2>
+                            <ul>
+                                <li>
+                                    <a>产品定义</a>
+                                </li>
+                                <li>
+                                    <a>物料结构(BOM)</a>
+                                </li>
+                                <li>
+                                    <a>工艺路线</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <h2 className="menu-title">生产计划与调度</h2>
+                            <ul>
+                                <li>
+                                    <a>订单</a>
+                                </li>
+                                <li>
+                                    <a>生产计划</a>
+                                </li>
+                                <li>
+                                    <a>调度指令</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <h2 className="menu-title">生产过程</h2>
+                            <ul>
+                                <li>
+                                    <a>在制品</a>
+                                </li>
+                                <li>
+                                    <a>设备运行数据</a>
+                                </li>
+                                <li>
+                                    <a>质量检测</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <h2 className="menu-title">库存</h2>
+                            <ul>
+                                <li>
+                                    <a>原材料</a>
+                                </li>
+                                <li>
+                                    <a>半成品</a>
+                                </li>
+                                <li>
+                                    <a>成品</a>
                                 </li>
                             </ul>
                         </li>
