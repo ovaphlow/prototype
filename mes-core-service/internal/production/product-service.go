@@ -53,6 +53,7 @@ func (p *ProductApplicationService) Save(product schema.Product) error {
 		"id":     id,
 		"time":   now.Format("2006-01-02 15:04:05-07"),
 		"state":  string(stateJSON),
+		"name":   product.Name,
 		"detail": product.Detail,
 	})
 	if err != nil {
