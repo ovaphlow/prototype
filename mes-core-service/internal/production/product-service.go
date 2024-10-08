@@ -49,7 +49,7 @@ func (p *ProductApplicationService) Save(product schema.Product) error {
 		return err
 	}
 
-	err = infra.NewSQLSaveBuilder(infra.Postgres).Save(&infra.SCHEMA_NAME, &TableName, map[string]interface{}{
+	err = infra.NewSQLSaveBuilder(infra.Postgres).Save(&infra.SCHEMA_NAME, &ProductTableName, map[string]interface{}{
 		"id":     id,
 		"time":   now.Format("2006-01-02 15:04:05-07"),
 		"state":  string(stateJSON),
