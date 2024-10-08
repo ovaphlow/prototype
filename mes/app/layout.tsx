@@ -46,7 +46,7 @@ export default function RootLayout({
                             <h2 className="menu-title">产品</h2>
                             <ul>
                                 <li>
-                                    <a>产品定义</a>
+                                    <Link href="/product">产品定义</Link>
                                 </li>
                                 <li>
                                     <a>物料结构(BOM)</a>
