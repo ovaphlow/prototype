@@ -1,6 +1,15 @@
 package main
 
-import "ovaphlow/mes/core/internal/http"
+import (
+	"ovaphlow/mes/core/internal/http"
+	"ovaphlow/mes/core/internal/infra"
+)
+
+func init() {
+	infra.InitSlog()
+
+	infra.InitPostgres()
+}
 
 func main() {
 	r := http.SetupRouter()
