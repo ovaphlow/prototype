@@ -1,0 +1,1 @@
+export const CORE_SERVICE_URI_PREFIX = 'http://localhost:8088/core-api'

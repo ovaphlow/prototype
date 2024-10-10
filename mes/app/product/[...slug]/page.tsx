@@ -1,5 +1,7 @@
+import { format } from 'date-fns'
 import { Product } from '../page'
 import { Form } from './component-form'
+import { getProduct } from '../api'
 
 export interface ProductDetailProps {
     initialProduct: Product
@@ -9,17 +11,13 @@ async function getProductDetail(id: string): Promise<Product> {
     if (id === '0') {
         return {
             id: '0',
-            time: '',
-            state: new Map<string, string>(),
+            time: format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX"),
+            state: '{}',
             name: '',
-            detail: new Map<string, string>(),
+            detail: '{}',
         }
     } else {
-        const response = await fetch(`http://localhost:8088/core-api/production/product/${id}`, { cache: 'no-cache' })
-        if (!response.ok) {
-            throw new Error('获取产品数据失败')
-        }
-        return response.json()
+        return getProduct(id)
     }
 }
 

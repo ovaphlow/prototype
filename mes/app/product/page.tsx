@@ -1,24 +1,17 @@
 import { format } from 'date-fns'
 import Link from 'next/link'
+import { getProductList } from './api'
 
 export interface Product {
     id: string
     time: string
-    state: Map<string, string>
+    state: string
     name: string
-    detail: Map<string, string>
-}
-
-async function getProducts(): Promise<Product[]> {
-    const res = await fetch('http://localhost:8088/core-api/production/product', { cache: 'no-cache' })
-    if (!res.ok) {
-        throw new Error('获取产品数据失败')
-    }
-    return res.json()
+    detail: string
 }
 
 export default async function Product() {
-    const products = await getProducts()
+    const products = await getProductList()
 
     return (
         <div className="flex flex-col p-4">
@@ -34,17 +27,25 @@ export default async function Product() {
                         <tr>
                             <td>操作</td>
                             <td>时间</td>
-                            <td>内容</td>
+                            <td>名称</td>
+                            <td>编号</td>
+                            <td>规格</td>
+                            <td>型号</td>
+                            <td>版本</td>
                         </tr>
                     </thead>
                     <tbody>
-                        {products.map((product) => (
-                            <tr key={product.id}>
+                        {products.map((it) => (
+                            <tr key={it.id}>
                                 <td>
-                                    <span>查看</span>
+                                    <Link href={`/product/${it.id}`}>查看</Link>
                                 </td>
-                                <td>{format(new Date(product.time), 'yyyy-MM-dd HH:mm')}</td>
-                                <td>{product.detail}</td>
+                                <td>{format(new Date(it.time), 'yyyy-MM-dd HH:mm')}</td>
+                                <td>{it.name}</td>
+                                <td>{JSON.parse(it.detail)?.['sn']}</td>
+                                <td>{JSON.parse(it.detail)?.['spec']}</td>
+                                <td>{JSON.parse(it.detail)?.['model']}</td>
+                                <td>{JSON.parse(it.detail)?.['version']}</td>
                             </tr>
                         ))}
                     </tbody>

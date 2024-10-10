@@ -15,7 +15,7 @@ func SetupProductionRoutes(router *gin.Engine) {
 	productService := production.NewProductApplicationService(*productRepo)
 
 	router.GET("/core-api/production/product", func(c *gin.Context) {
-		result, err := productService.List()
+		result, err := productService.GetMany()
 		if err != nil {
 			log.Println(err.Error())
 			c.Status(http.StatusInternalServerError)
@@ -41,6 +41,38 @@ func SetupProductionRoutes(router *gin.Engine) {
 			return
 		}
 		c.Status(http.StatusCreated)
+	})
+
+	router.GET("/core-api/production/product/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		result, err := productService.GetOne(id)
+		if err != nil {
+			log.Println(err.Error())
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		if result == nil {
+			c.Status(http.StatusNotFound)
+			return
+		}
+		c.JSON(http.StatusOK, result)
+	})
+
+	router.PUT("/core-api/production/product/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		var product schema.Product
+		if err := c.ShouldBindJSON(&product); err != nil {
+			log.Println(err.Error())
+			c.Status(http.StatusBadRequest)
+			return
+		}
+		product.ID = id
+		if err := productService.Update(product); err != nil {
+			log.Println(err.Error())
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		c.Status(http.StatusOK)
 	})
 
 	router.GET("/core-api/production/bom", func(c *gin.Context) {

@@ -17,7 +17,60 @@ func NewProductApplicationService(productRepo ProductRepository) *ProductApplica
 	}
 }
 
-func (p *ProductApplicationService) List() ([]map[string]interface{}, error) {
+func (p *ProductApplicationService) Update(product schema.Product) error {
+	var stateMap map[string]interface{}
+	err := json.Unmarshal([]byte(product.State), &stateMap)
+	if err != nil {
+		return err
+	}
+	stateMap["updated_at"] = time.Now().Format("2006-01-02 15:04:05-07")
+	updatedState, err := json.Marshal(stateMap)
+	if err != nil {
+		return err
+	}
+	product.State = string(updatedState)
+
+	err = infra.NewSQLUpdateBuilder(infra.Postgres).
+		Update(
+			&infra.SCHEMA_NAME,
+			&ProductTableName,
+			map[string]interface{}{
+				"name":   product.Name,
+				"detail": product.Detail,
+				"state":  product.State,
+			},
+			"where id = '"+product.ID+"'",
+		)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *ProductApplicationService) GetOne(id string) (map[string]interface{}, error) {
+	builder, err := infra.NewSQLQueryBuilder().Init(infra.Postgres).Select(nil, &infra.SCHEMA_NAME, &ProductTableName)
+	if err != nil {
+		return nil, err
+	}
+	builder, err = builder.Where([][]string{{"equal", "id", id}})
+	if err != nil {
+		return nil, err
+	}
+	rows, err := builder.Query()
+	if err != nil {
+		return nil, err
+	}
+	result, err := infra.SQLRows2Map(rows)
+	if err != nil {
+		return nil, err
+	}
+	if len(result) >= 1 {
+		return result[0], nil
+	}
+	return nil, nil
+}
+
+func (p *ProductApplicationService) GetMany() ([]map[string]interface{}, error) {
 	builder, err := infra.NewSQLQueryBuilder().Init(infra.Postgres).Select(nil, &infra.SCHEMA_NAME, &ProductTableName)
 	if err != nil {
 		return nil, err
@@ -42,7 +95,7 @@ func (p *ProductApplicationService) Save(product schema.Product) error {
 	now := time.Now()
 
 	state := map[string]string{
-		"created_at": now.Format("2006-01-02 15:04:05.000-07"),
+		"created_at": now.Format("2006-01-02 15:04:05-07"),
 	}
 	stateJSON, err := json.Marshal(state)
 	if err != nil {

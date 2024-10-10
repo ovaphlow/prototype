@@ -67,6 +67,13 @@ func (qb *SQLQueryBuilder) Select(columns []string, database, table *string) (*S
 func (qb *SQLQueryBuilder) Where(conditions [][]string) (*SQLQueryBuilder, error) {
 	var c []string
 	for _, condition := range conditions {
+		if condition[0] == "equal" {
+			if len(condition) < 3 {
+				continue
+			}
+			c = append(c, condition[1]+" = $"+strconv.Itoa(len(qb.parameters)+1))
+			qb.parameters = append(qb.parameters, condition[2])
+		}
 		if condition[0] == "in" {
 			if len(condition) <= 2 {
 				continue
@@ -138,8 +145,7 @@ func SQLRows2Map(rows *sql.Rows) ([]map[string]interface{}, error) {
 }
 
 type SQLSaveBuilder struct {
-	db    *sql.DB
-	query string
+	db *sql.DB
 }
 
 func NewSQLSaveBuilder(db *sql.DB) *SQLSaveBuilder {
@@ -184,5 +190,53 @@ func (sb *SQLSaveBuilder) Save(s, t *string, row map[string]interface{}) error {
 		p[i] = v
 	}
 	_, err = sb.db.Exec(query, p...)
+	return err
+}
+
+type SQLUpdateBuilder struct {
+	db *sql.DB
+}
+
+func NewSQLUpdateBuilder(db *sql.DB) *SQLUpdateBuilder {
+	builder := SQLUpdateBuilder{}
+	builder.db = db
+	return &builder
+}
+
+func (ub *SQLUpdateBuilder) Update(s, t *string, row map[string]interface{}, where string) error {
+	columns, err := GetColumns(ub.db, s, t)
+	if err != nil {
+		return err
+	}
+	var columnNames []string
+	var values []string
+	for _, column := range columns {
+		if _, ok := row[column]; ok {
+			columnNames = append(columnNames, column)
+			values = append(values, fmt.Sprintf("%v", row[column]))
+		}
+	}
+	query := fmt.Sprintf(
+		"update %s.%s set ",
+		*s,
+		*t,
+	)
+	if len(values) == 0 {
+		return nil
+	}
+	for i := 0; i < len(values); i++ {
+		query += columnNames[i] + " = $" + strconv.Itoa(i+1)
+		if i < len(values)-1 {
+			query += ", "
+		}
+	}
+	query += " " + where
+	log.Println(query)
+	log.Println(values)
+	p := make([]interface{}, len(values))
+	for i, v := range values {
+		p[i] = v
+	}
+	_, err = ub.db.Exec(query, p...)
 	return err
 }
