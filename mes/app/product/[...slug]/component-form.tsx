@@ -8,18 +8,23 @@ import { saveProduct, updateProduct } from '../api'
 
 export function Form({ initialProduct }: ProductDetailProps) {
     const [product, setProduct] = useState<Product>(initialProduct)
-    const [detail, setDetail] = useState(product.id && product.id !== '0' ? JSON.parse(product.detail) : {
-        sn: '',
-        spec: '',
-        model: '',
-        version: '',
-    })
+    const [detail, setDetail] = useState(
+        product.id && product.id !== '0'
+            ? JSON.parse(product.detail)
+            : {
+                  sn: '',
+                  spec: '',
+                  model: '',
+                  version: '',
+              },
+    )
 
     const handleChangeProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setProduct((prevState) => ({
-            ...prevState,
-            [e.target.name]: e.target.value,
-        }))
+        setProduct((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    }
+
+    const handleChangeProductDetail = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDetail((prev: typeof detail) => Object.assign({ ...prev, [e.target.name]: e.target.value }))
     }
 
     const handleSubmitProduct = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,13 +48,7 @@ export function Form({ initialProduct }: ProductDetailProps) {
             </label>
             <label className="input input-bordered flex items-center gap-2">
                 编号
-                <input
-                    type="text"
-                    name="sn"
-                    className="grow"
-                    value={detail.sn}
-                    onChange={(e) => setDetail((prev: typeof detail) => Object.assign({ ...prev, sn: e.target.value }))}
-                />
+                <input type="text" name="sn" className="grow" value={detail.sn} onChange={handleChangeProductDetail} />
             </label>
             <label className="input input-bordered flex items-center gap-2">
                 规格
@@ -58,7 +57,7 @@ export function Form({ initialProduct }: ProductDetailProps) {
                     name="spec"
                     className="grow"
                     value={detail.spec}
-                    onChange={(e) => setDetail((prev: typeof detail) => Object.assign({ ...prev, spec: e.target.value }))}
+                    onChange={handleChangeProductDetail}
                 />
             </label>
             <label className="input input-bordered flex items-center gap-2">
@@ -68,7 +67,7 @@ export function Form({ initialProduct }: ProductDetailProps) {
                     name="model"
                     className="grow"
                     value={detail.model}
-                    onChange={(e) => setDetail((prev: typeof detail) => Object.assign({ ...prev, model: e.target.value }))}
+                    onChange={handleChangeProductDetail}
                 />
             </label>
             <label className="input input-bordered flex items-center gap-2">
@@ -78,7 +77,7 @@ export function Form({ initialProduct }: ProductDetailProps) {
                     name="version"
                     className="grow"
                     value={detail.version}
-                    onChange={(e) => setDetail((prev: typeof detail) => Object.assign({ ...prev, version: e.target.value }))}
+                    onChange={handleChangeProductDetail}
                 />
             </label>
             <div className="flex flex-row justify-center gap-4">
