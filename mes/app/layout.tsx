@@ -49,7 +49,7 @@ export default function RootLayout({
                                     <Link href="/product">产品定义</Link>
                                 </li>
                                 <li>
-                                    <a>物料结构(BOM)</a>
+                                    <Link href="/bom">物料结构(BOM)</Link>
                                 </li>
                                 <li>
                                     <a>工艺路线</a>
