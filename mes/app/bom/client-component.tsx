@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Bom, saveBom, updateBom } from './api'
 import Link from 'next/link'
+import { getProductList, Product } from '../product/api'
 
 export function Form({ initialBom }: { initialBom: Bom }) {
     const [bom, setBom] = useState<Bom>(initialBom)
@@ -16,6 +17,7 @@ export function Form({ initialBom }: { initialBom: Bom }) {
                   seq: '',
               },
     )
+    const [products, setProducts] = useState<{ id: string; sn: string; name: string }[]>([])
 
     const handleSubmitBom = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -27,11 +29,47 @@ export function Form({ initialBom }: { initialBom: Bom }) {
         alert('保存成功')
     }
 
+    useEffect(() => {
+        const loadProductList = async () => {
+            const p = await getProductList()
+            setProducts(p.map((it: Product) => ({ id: it.id, sn: JSON.parse(it.detail)?.['sn'], name: it.name })))
+        }
+        loadProductList()
+    }, [])
+
     return (
         <form onSubmit={handleSubmitBom} className="flex flex-col gap-4">
             <Link href="/bom" className="btn btn-outline btn-sm w-16">
                 返回
             </Link>
+            <select
+                className="select select-bordered w-full"
+                title="产品"
+                value={bom.product_id}
+                onChange={(e) => setBom((prev: Bom) => ({ ...prev, product_id: e.target.value }))}
+            >
+                <option disabled value="">
+                    产品
+                </option>
+                {products.map((it) => (
+                    <option key={it.id} value={it.id}>
+                        {it.name}
+                    </option>
+                ))}
+            </select>
+            <select
+                className="select select-bordered w-full"
+                title="类别"
+                value={detail.category}
+                onChange={(e) => setDetail((prev: typeof bom) => ({ ...prev, category: e.target.value }))}
+            >
+                <option disabled value="">
+                    类别
+                </option>
+                <option value="原材料">原材料</option>
+                <option value="零部件">零部件</option>
+                <option value="半成品">半成品</option>
+            </select>
             <label className="input input-bordered flex items-center gap-2">
                 编号
                 <input

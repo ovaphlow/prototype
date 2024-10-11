@@ -1,7 +1,6 @@
 import { format } from 'date-fns'
-import { Product } from '../page'
 import { Form } from './component-form'
-import { getProduct } from '../api'
+import { Product, getProduct } from '../api'
 
 export interface ProductDetailProps {
     initialProduct: Product

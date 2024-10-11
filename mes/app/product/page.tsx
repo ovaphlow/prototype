@@ -2,14 +2,6 @@ import { format } from 'date-fns'
 import Link from 'next/link'
 import { getProductList } from './api'
 
-export interface Product {
-    id: string
-    time: string
-    state: string
-    name: string
-    detail: string
-}
-
 export default async function Product() {
     const products = await getProductList()
 

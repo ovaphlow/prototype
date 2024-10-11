@@ -1,5 +1,12 @@
 import { CORE_SERVICE_URI_PREFIX } from '@/constant/webapi'
-import { Product } from './page'
+
+export interface Product {
+    id: string
+    time: string
+    state: string
+    name: string
+    detail: string
+}
 
 export async function updateProduct(id: string, product: Product): Promise<void> {
     const response = await fetch(`${CORE_SERVICE_URI_PREFIX}/production/product/${id}`, {

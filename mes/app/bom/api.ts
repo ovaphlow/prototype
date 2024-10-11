@@ -4,6 +4,7 @@ export type Bom = {
     id: string
     time: string
     state: string
+    product_id: string
     sn: string
     detail: string
 }

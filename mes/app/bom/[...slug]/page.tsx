@@ -9,6 +9,7 @@ async function getBomDetail(id: string): Promise<Bom> {
             id: '0',
             time: format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX"),
             state: '{}',
+            product_id: '',
             sn: '',
             detail: '',
         }

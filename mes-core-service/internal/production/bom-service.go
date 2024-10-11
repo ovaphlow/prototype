@@ -14,7 +14,24 @@ func NewBomApplicationService() *BomApplicationService {
 	return &BomApplicationService{}
 }
 
-func (as *BomApplicationService) Create(bom schema.Bom) error {
+func (s *BomApplicationService) GetMany() ([]map[string]interface{}, error) {
+	builder, err := infra.NewSQLQueryBuilder().Init(infra.Postgres).Select(nil, &infra.SCHEMA_NAME, &schema.BomTableName)
+	if err != nil {
+		return nil, err
+	}
+	builder.Append("order by id desc")
+	rows, err := builder.Query()
+	if err != nil {
+		return nil, err
+	}
+	result, err := infra.SQLRows2Map(rows)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (s *BomApplicationService) Create(bom schema.Bom) error {
 	id, err := infra.GenerateKsuid()
 	if err != nil {
 		return err

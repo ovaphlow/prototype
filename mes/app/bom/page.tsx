@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Bom, getBomList } from "./api";
 
 export default async function BomPage() {
-    const boms: Bom[] = []//await getBomList()
+    const boms: Bom[] = await getBomList()
 
     return (
         <div className="flex flex-col p-4">
@@ -31,12 +31,12 @@ export default async function BomPage() {
                                 <td>
                                     <Link href={`/bom/${it.id}`}>查看</Link>
                                 </td>
-                                <td>{JSON.parse(it.detail)?.['version']}</td>
-                                <td>{JSON.parse(it.detail)?.['version']}</td>
-                                <td>{JSON.parse(it.detail)?.['version']}</td>
-                                <td>{JSON.parse(it.detail)?.['version']}</td>
-                                <td>{JSON.parse(it.detail)?.['version']}</td>
-                                <td>{JSON.parse(it.detail)?.['version']}</td>
+                                <td>{it.product_id}</td>
+                                <td>{it.sn}</td>
+                                <td>{JSON.parse(it.detail)?.['name']}</td>
+                                <td>{JSON.parse(it.detail)?.['category']}</td>
+                                <td>{JSON.parse(it.detail)?.['qty']}</td>
+                                <td>{JSON.parse(it.detail)?.['seq']}</td>
                             </tr>
                         ))}
                     </tbody>

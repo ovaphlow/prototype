@@ -2,9 +2,8 @@
 
 import { useState } from 'react'
 import { ProductDetailProps } from './page'
-import { Product } from '../page'
 import Link from 'next/link'
-import { saveProduct, updateProduct } from '../api'
+import { Product, saveProduct, updateProduct } from '../api'
 
 export function Form({ initialProduct }: ProductDetailProps) {
     const [product, setProduct] = useState<Product>(initialProduct)
@@ -20,7 +19,7 @@ export function Form({ initialProduct }: ProductDetailProps) {
     )
 
     const handleChangeProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setProduct((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+        setProduct((prev: Product) => ({ ...prev, [e.target.name]: e.target.value }))
     }
 
     const handleChangeProductDetail = (e: React.ChangeEvent<HTMLInputElement>) => {

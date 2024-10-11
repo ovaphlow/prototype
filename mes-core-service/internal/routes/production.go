@@ -13,6 +13,7 @@ import (
 func SetupProductionRoutes(router *gin.Engine) {
 	productRepo := production.NewProductRepository(infra.Postgres)
 	productService := production.NewProductApplicationService(*productRepo)
+	bomService := production.NewBomApplicationService()
 
 	router.GET("/core-api/production/product", func(c *gin.Context) {
 		result, err := productService.GetMany()
@@ -76,7 +77,32 @@ func SetupProductionRoutes(router *gin.Engine) {
 	})
 
 	router.GET("/core-api/production/bom", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "BOM"})
+		result, err := bomService.GetMany()
+		if err != nil {
+			log.Println(err.Error())
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		if len(result) == 0 {
+			c.JSON(http.StatusOK, []map[string]interface{}{})
+			return
+		}
+		c.JSON(http.StatusOK, result)
+	})
+
+	router.POST("/core-api/production/bom", func(c *gin.Context) {
+		var body schema.Bom
+		if err := c.ShouldBindJSON(&body); err != nil {
+			log.Println(err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		if err := bomService.Create(body); err != nil {
+			log.Println(err.Error())
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		c.Status(http.StatusCreated)
 	})
 
 	router.GET("/core-api/production/process-route", func(c *gin.Context) {
