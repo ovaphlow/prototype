@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import { Form } from './component-form'
+import { Form } from '../component.client'
 import { Product, getProduct } from '../api'
 
 export interface ProductDetailProps {

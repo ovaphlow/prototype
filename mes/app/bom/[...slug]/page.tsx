@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import { Bom, getBom } from '../api'
-import { Form } from '../client-component'
+import { Form } from '../component.client'
 import { Suspense } from 'react'
 
 async function getBomDetail(id: string): Promise<Bom> {
