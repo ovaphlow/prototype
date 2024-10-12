@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { ProcessRoute, saveProcessRoute, updateProcessRoute } from './api'
 import { getProductList, Product } from '../product/api'
-import Link from 'next/link'
 
 export function Form({ initial }: { initial: ProcessRoute }) {
     const [route, setRoute] = useState<ProcessRoute>(initial)
@@ -11,10 +10,7 @@ export function Form({ initial }: { initial: ProcessRoute }) {
         route.id && route.id !== '0'
             ? JSON.parse(route.detail)
             : {
-                  category: '',
                   name: '',
-                  qty: '',
-                  seq: '',
               },
     )
     const [products, setProducts] = useState<{ id: string; sn: string; name: string }[]>([])
@@ -39,9 +35,6 @@ export function Form({ initial }: { initial: ProcessRoute }) {
 
     return (
         <form onSubmit={handleSubmitRoute} className="flex flex-col gap-4">
-            <Link href="/process-route" className="btn btn-outline btn-sm w-16">
-                返回
-            </Link>
             <select
                 className="select select-bordered w-full"
                 title="产品"

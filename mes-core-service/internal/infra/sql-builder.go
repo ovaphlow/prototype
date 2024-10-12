@@ -147,18 +147,20 @@ func SQLRows2Map(rows *sql.Rows) ([]map[string]interface{}, error) {
 
 type SQLSaveBuilder struct {
 	db     *sql.DB
-	schema string
-	table  string
+	schema *string
+	table  *string
 }
 
 func NewSQLSaveBuilder(db *sql.DB, schema, table *string) *SQLSaveBuilder {
-	builder := SQLSaveBuilder{}
-	builder.db = db
-	return &builder
+	return &SQLSaveBuilder{
+		db:     db,
+		schema: schema,
+		table:  table,
+	}
 }
 
 func (sb *SQLSaveBuilder) Save(row map[string]interface{}) error {
-	columns, err := GetColumns(sb.db, &sb.schema, &sb.table)
+	columns, err := GetColumns(sb.db, sb.schema, sb.table)
 	if err != nil {
 		return err
 	}
@@ -172,8 +174,8 @@ func (sb *SQLSaveBuilder) Save(row map[string]interface{}) error {
 	}
 	query := fmt.Sprintf(
 		"insert into %s.%s (%s) values (",
-		sb.schema,
-		sb.table,
+		*sb.schema,
+		*sb.table,
 		strings.Join(columnNames, ", "),
 	)
 	if len(values) == 0 {
@@ -186,8 +188,6 @@ func (sb *SQLSaveBuilder) Save(row map[string]interface{}) error {
 		}
 	}
 	query += ")"
-	log.Println(query)
-	log.Println(values)
 	p := make([]interface{}, len(values))
 	for i, v := range values {
 		p[i] = v

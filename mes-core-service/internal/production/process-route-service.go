@@ -3,6 +3,7 @@ package production
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"ovaphlow/mes/core/internal/infra"
 	"ovaphlow/mes/core/internal/schema"
 	"time"
@@ -16,6 +17,30 @@ func NewProcessRouteApplicationService(db *sql.DB) *ProcessRouteApplicationServi
 	return &ProcessRouteApplicationService{
 		db: db,
 	}
+}
+
+func (s *ProcessRouteApplicationService) GetOne(id string) (map[string]interface{}, error) {
+	builder, err := infra.NewSQLQueryBuilder(infra.Postgres, &infra.SCHEMA_NAME, &schema.ProcessRouteTableName).Select(nil)
+	if err != nil {
+		return nil, err
+	}
+	builder, err = builder.Where([][]string{{"equal", "id", id}})
+	if err != nil {
+		return nil, err
+	}
+	builder = builder.Append("limit 1")
+	rows, err := builder.Query()
+	if err != nil {
+		return nil, err
+	}
+	result, err := infra.SQLRows2Map(rows)
+	if err != nil {
+		return nil, err
+	}
+	if len(result) >= 1 {
+		return result[0], nil
+	}
+	return nil, nil
 }
 
 func (s *ProcessRouteApplicationService) GetMany() ([]map[string]interface{}, error) {
@@ -48,7 +73,8 @@ func (s *ProcessRouteApplicationService) Create(d *schema.ProcessRoute) error {
 	if err != nil {
 		return err
 	}
-
+	log.Println(d)
+	log.Println(string(stateJson))
 	err = infra.NewSQLSaveBuilder(infra.Postgres, &infra.SCHEMA_NAME, &schema.ProcessRouteTableName).Save(map[string]interface{}{
 		"id":         id,
 		"time":       now,

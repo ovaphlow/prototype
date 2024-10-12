@@ -28,7 +28,7 @@ export default async function Page() {
                         {routes.map((it) => (
                             <tr key={it.id}>
                                 <td>
-                                    <Link href={`/bom/${it.id}`}>查看</Link>
+                                    <Link href={`/process-route/${it.id}`}>查看</Link>
                                 </td>
                                 <td>{it.product_id}</td>
                                 <td>{it.sn}</td>

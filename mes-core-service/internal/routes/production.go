@@ -134,4 +134,19 @@ func SetupProductionRoutes(router *gin.Engine) {
 		}
 		c.Status(http.StatusCreated)
 	})
+
+	router.GET("/core-api/production/process-route/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		result, err := processRouteService.GetOne(id)
+		if err != nil {
+			log.Println(err.Error())
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		if result == nil {
+			c.Status(http.StatusNotFound)
+			return
+		}
+		c.JSON(http.StatusOK, result)
+	})
 }
