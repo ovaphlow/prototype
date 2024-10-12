@@ -33,33 +33,34 @@ func GetColumns(db *sql.DB, s, t *string) ([]string, error) {
 
 type SQLQueryBuilder struct {
 	postgres   *sql.DB
+	schema     string
+	table      string
 	query      string
 	parameters []string
 }
 
-func NewSQLQueryBuilder() *SQLQueryBuilder {
-	return &SQLQueryBuilder{}
+func NewSQLQueryBuilder(postgres *sql.DB, schema, table *string) *SQLQueryBuilder {
+	return &SQLQueryBuilder{
+		postgres: postgres,
+		schema:   *schema,
+		table:    *table,
+	}
 }
 
-func (qb *SQLQueryBuilder) Init(postgres *sql.DB) *SQLQueryBuilder {
-	qb.postgres = postgres
-	return qb
-}
-
-func (qb *SQLQueryBuilder) Select(columns []string, database, table *string) (*SQLQueryBuilder, error) {
+func (qb *SQLQueryBuilder) Select(columns []string) (*SQLQueryBuilder, error) {
 	qb.query = "select "
 	var err error
 	if len(columns) == 0 {
-		columns, err = GetColumns(qb.postgres, database, table)
+		columns, err = GetColumns(qb.postgres, &qb.schema, &qb.table)
 		if err != nil {
 			return nil, err
 		}
 	}
 	qb.query += strings.Join(columns, ", ")
-	if database != nil && *database != "" {
-		qb.query += " from " + *database + "." + *table
+	if qb.schema != "" {
+		qb.query += " from " + qb.schema + "." + qb.table
 	} else {
-		qb.query += " from " + *table
+		qb.query += " from " + qb.table
 	}
 	return qb, nil
 }
@@ -145,17 +146,19 @@ func SQLRows2Map(rows *sql.Rows) ([]map[string]interface{}, error) {
 }
 
 type SQLSaveBuilder struct {
-	db *sql.DB
+	db     *sql.DB
+	schema string
+	table  string
 }
 
-func NewSQLSaveBuilder(db *sql.DB) *SQLSaveBuilder {
+func NewSQLSaveBuilder(db *sql.DB, schema, table *string) *SQLSaveBuilder {
 	builder := SQLSaveBuilder{}
 	builder.db = db
 	return &builder
 }
 
-func (sb *SQLSaveBuilder) Save(s, t *string, row map[string]interface{}) error {
-	columns, err := GetColumns(sb.db, s, t)
+func (sb *SQLSaveBuilder) Save(row map[string]interface{}) error {
+	columns, err := GetColumns(sb.db, &sb.schema, &sb.table)
 	if err != nil {
 		return err
 	}
@@ -169,8 +172,8 @@ func (sb *SQLSaveBuilder) Save(s, t *string, row map[string]interface{}) error {
 	}
 	query := fmt.Sprintf(
 		"insert into %s.%s (%s) values (",
-		*s,
-		*t,
+		sb.schema,
+		sb.table,
 		strings.Join(columnNames, ", "),
 	)
 	if len(values) == 0 {

@@ -8,18 +8,18 @@ import (
 	"time"
 )
 
-type BomApplicationService struct {
+type ProcessRouteApplicationService struct {
 	db *sql.DB
 }
 
-func NewBomApplicationService(db *sql.DB) *BomApplicationService {
-	return &BomApplicationService{
+func NewProcessRouteApplicationService(db *sql.DB) *ProcessRouteApplicationService {
+	return &ProcessRouteApplicationService{
 		db: db,
 	}
 }
 
-func (s *BomApplicationService) GetMany() ([]map[string]interface{}, error) {
-	builder, err := infra.NewSQLQueryBuilder(s.db, &infra.SCHEMA_NAME, &schema.BomTableName).Select(nil)
+func (s *ProcessRouteApplicationService) GetMany() ([]map[string]interface{}, error) {
+	builder, err := infra.NewSQLQueryBuilder(infra.Postgres, &infra.SCHEMA_NAME, &schema.ProcessRouteTableName).Select(nil)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (s *BomApplicationService) GetMany() ([]map[string]interface{}, error) {
 	return result, nil
 }
 
-func (s *BomApplicationService) Create(bom *schema.Bom) error {
+func (s *ProcessRouteApplicationService) Create(d *schema.ProcessRoute) error {
 	id, err := infra.GenerateKsuid()
 	if err != nil {
 		return err
@@ -49,13 +49,13 @@ func (s *BomApplicationService) Create(bom *schema.Bom) error {
 		return err
 	}
 
-	err = infra.NewSQLSaveBuilder(s.db, &infra.SCHEMA_NAME, &schema.BomTableName).Save(map[string]interface{}{
+	err = infra.NewSQLSaveBuilder(infra.Postgres, &infra.SCHEMA_NAME, &schema.ProcessRouteTableName).Save(map[string]interface{}{
 		"id":         id,
 		"time":       now,
 		"state":      string(stateJson),
-		"product_id": bom.ProductID,
-		"sn":         bom.SN,
-		"detail":     bom.Detail,
+		"product_id": d.ProductID,
+		"sn":         d.SN,
+		"detail":     d.Detail,
 	})
 	if err != nil {
 		return err

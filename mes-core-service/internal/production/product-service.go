@@ -48,7 +48,7 @@ func (p *ProductApplicationService) Update(product schema.Product) error {
 }
 
 func (p *ProductApplicationService) GetOne(id string) (map[string]interface{}, error) {
-	builder, err := infra.NewSQLQueryBuilder().Init(infra.Postgres).Select(nil, &infra.SCHEMA_NAME, &ProductTableName)
+	builder, err := infra.NewSQLQueryBuilder(infra.Postgres, &infra.SCHEMA_NAME, &ProductTableName).Select(nil)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (p *ProductApplicationService) GetOne(id string) (map[string]interface{}, e
 }
 
 func (p *ProductApplicationService) GetMany() ([]map[string]interface{}, error) {
-	builder, err := infra.NewSQLQueryBuilder().Init(infra.Postgres).Select(nil, &infra.SCHEMA_NAME, &ProductTableName)
+	builder, err := infra.NewSQLQueryBuilder(infra.Postgres, &infra.SCHEMA_NAME, &ProductTableName).Select(nil)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (p *ProductApplicationService) Save(product schema.Product) error {
 		return err
 	}
 
-	err = infra.NewSQLSaveBuilder(infra.Postgres).Save(&infra.SCHEMA_NAME, &ProductTableName, map[string]interface{}{
+	err = infra.NewSQLSaveBuilder(infra.Postgres, &infra.SCHEMA_NAME, &ProductTableName).Save(map[string]interface{}{
 		"id":     id,
 		"time":   now.Format("2006-01-02 15:04:05-07"),
 		"state":  string(stateJSON),
