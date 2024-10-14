@@ -3,24 +3,31 @@ import { getProcessRoute, ProcessRoute } from '../api'
 import { Suspense } from 'react'
 import { Form } from '../component.client'
 import Link from 'next/link'
+import { getProcedureList, Procedure } from '@/app/procedure/api'
 
-async function loadData(id: string): Promise<ProcessRoute> {
+async function loadData(id: string) {
     if (id === '0') {
-        return {
-            id: '0',
-            time: format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX"),
-            state: '{}',
-            product_id: '',
-            sn: '',
-            detail: '',
-        }
+        return [
+            {
+                id: '0',
+                time: format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX"),
+                state: '{}',
+                product_id: '',
+                sn: '',
+                detail: '',
+            },
+            [],
+        ]
     } else {
-        return getProcessRoute(id)
+        return [
+            await getProcessRoute(id),
+            await getProcedureList(`?option=default-filter&filter=equal,2,process_route_id,${id}`),
+        ]
     }
 }
 
 export default async function Page({ params }: { params: { slug: string[] } }) {
-    const route = await loadData(params.slug[0])
+    const [route, procedures] = await loadData(params.slug[0])
 
     return (
         <div className="flex flex-col p-4">
@@ -54,12 +61,23 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
                             <thead>
                                 <tr>
                                     <td>操作</td>
-                                    <td>产品</td>
                                     <td>编号</td>
                                     <td>名称</td>
+                                    <td>顺序</td>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody>
+                                {procedures.map((it: Procedure) => (
+                                    <tr key={it.id}>
+                                        <td>
+                                            <Link href={`/procedure/${it.id}/${route.id}`}>查看</Link>
+                                        </td>
+                                        <td>{it.sn}</td>
+                                        <td>{JSON.parse(it.detail)?.['name']}</td>
+                                        <td>{JSON.parse(it.detail)?.['seq']}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
                         </table>
                     </div>
                 </div>
