@@ -3,7 +3,6 @@ package production
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
 	"ovaphlow/mes/core/internal/infra"
 	"ovaphlow/mes/core/internal/schema"
 	"time"
@@ -73,8 +72,6 @@ func (s *ProcessRouteApplicationService) Create(d *schema.ProcessRoute) error {
 	if err != nil {
 		return err
 	}
-	log.Println(d)
-	log.Println(string(stateJson))
 	err = infra.NewSQLSaveBuilder(infra.Postgres, &infra.SCHEMA_NAME, &schema.ProcessRouteTableName).Save(map[string]interface{}{
 		"id":         id,
 		"time":       now,

@@ -15,6 +15,7 @@ func SetupProductionRoutes(router *gin.Engine) {
 	productService := production.NewProductApplicationService(*productRepo)
 	bomService := production.NewBomApplicationService(infra.Postgres)
 	processRouteService := production.NewProcessRouteApplicationService(infra.Postgres)
+	procedureService := production.NewProcedureApplicationService(infra.Postgres)
 
 	router.GET("/core-api/production/product", func(c *gin.Context) {
 		result, err := productService.GetMany()
@@ -148,5 +149,63 @@ func SetupProductionRoutes(router *gin.Engine) {
 			return
 		}
 		c.JSON(http.StatusOK, result)
+	})
+
+	router.GET("/core-api/production/procedure", func(c *gin.Context) {
+		option := c.DefaultQuery("option", "")
+		if option == "" {
+			result, err := procedureService.GetMany([][]string{})
+			if err != nil {
+				log.Println(err.Error())
+				c.Status(http.StatusInternalServerError)
+				return
+			}
+			if len(result) == 0 {
+				c.JSON(http.StatusOK, []map[string]interface{}{})
+				return
+			}
+			c.JSON(http.StatusOK, result)
+		} else if option == "default-filter" {
+			log.Println(c.DefaultQuery("filter", ""))
+			filter := c.DefaultQuery("filter", "")
+			if filter == "" {
+				c.Status(http.StatusBadRequest)
+				return
+			}
+			f, err := infra.ParseQueryString2DefaultFilter(filter)
+			if err != nil {
+				log.Println(err.Error())
+				c.Status(http.StatusBadRequest)
+				return
+			}
+			result, err := procedureService.GetMany(f)
+			if err != nil {
+				log.Println(err.Error())
+				c.Status(http.StatusBadRequest)
+				return
+			}
+			if len(result) == 0 {
+				c.JSON(http.StatusOK, []map[string]interface{}{})
+				return
+			}
+			c.JSON(http.StatusOK, result)
+		} else {
+			c.Status(http.StatusBadRequest)
+		}
+	})
+
+	router.POST("/core-api/production/procedure", func(c *gin.Context) {
+		var body schema.Procedure
+		if err := c.ShouldBindJSON(&body); err != nil {
+			log.Println(err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		if err := procedureService.Create(&body); err != nil {
+			log.Println(err.Error())
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		c.Status(http.StatusCreated)
 	})
 }
