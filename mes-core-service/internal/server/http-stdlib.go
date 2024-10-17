@@ -7,7 +7,7 @@ import (
 	"ovaphlow/mes/core/internal/routes"
 )
 
-func HTTPServeSTDLIB(addr string) {
+func HTTPServe(addr string) {
 	router := http.NewServeMux()
 
 	router.HandleFunc("GET /core-api/test", func(w http.ResponseWriter, r *http.Request) {

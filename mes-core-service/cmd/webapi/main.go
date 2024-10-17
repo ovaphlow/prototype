@@ -12,8 +12,5 @@ func init() {
 }
 
 func main() {
-	server.HTTPServeSTDLIB("8088")
-	// r := http.SetupRouter()
-	// Listen and Server in 0.0.0.0:8088
-	// r.Run(":8088")
+	server.HTTPServe("8088")
 }
