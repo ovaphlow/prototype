@@ -2,20 +2,18 @@ package routes
 
 import (
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
-func SetupScheduleRoutes(router *gin.Engine) {
-	router.GET("/core-api/schedule/order", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Schedule"})
+func SetupScheduleRoutes(router *http.ServeMux) {
+	router.HandleFunc("GET /core-api/schedule/order", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Schedule"))
 	})
 
-	router.GET("/core-api/schedule/plan", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Plan"})
+	router.HandleFunc("GET /core-api/schedule/plan", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Plan"))
 	})
 
-	router.GET("/core-api/schedule/dispatch", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Dispatch"})
+	router.HandleFunc("GET /core-api/schedule/dispatch", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Dispatch"))
 	})
 }

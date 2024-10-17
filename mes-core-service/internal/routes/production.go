@@ -1,211 +1,246 @@
 package routes
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"ovaphlow/mes/core/internal/infra"
 	"ovaphlow/mes/core/internal/production"
 	"ovaphlow/mes/core/internal/schema"
-
-	"github.com/gin-gonic/gin"
 )
 
-func SetupProductionRoutes(router *gin.Engine) {
+func SetupProductionRoutes(router *http.ServeMux) {
 	productRepo := production.NewProductRepository(infra.Postgres)
 	productService := production.NewProductApplicationService(*productRepo)
 	bomService := production.NewBomApplicationService(infra.Postgres)
 	processRouteService := production.NewProcessRouteApplicationService(infra.Postgres)
 	procedureService := production.NewProcedureApplicationService(infra.Postgres)
 
-	router.GET("/core-api/production/product", func(c *gin.Context) {
+	router.HandleFunc("GET /core-api/production/product", func(w http.ResponseWriter, r *http.Request) {
 		result, err := productService.GetMany()
 		if err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusInternalServerError)
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
 			return
 		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		if len(result) == 0 {
-			c.JSON(http.StatusOK, []schema.Product{})
+			w.Write([]byte("[]"))
 			return
 		}
-		c.JSON(http.StatusOK, result)
+		if err := json.NewEncoder(w).Encode(result); err != nil {
+			log.Println(err.Error())
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
+		}
 	})
 
-	router.POST("/core-api/production/product", func(c *gin.Context) {
+	router.HandleFunc("POST /core-api/production/product", func(w http.ResponseWriter, r *http.Request) {
 		var product schema.Product
-		if err := c.ShouldBindJSON(&product); err != nil {
+		if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
 			log.Println(err.Error())
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
 			return
 		}
 		if err := productService.Save(product); err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusInternalServerError)
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
 			return
 		}
-		c.Status(http.StatusCreated)
+		w.WriteHeader(http.StatusCreated)
 	})
 
-	router.GET("/core-api/production/product/:id", func(c *gin.Context) {
-		id := c.Param("id")
+	router.HandleFunc("GET /core-api/production/product/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
 		result, err := productService.GetOne(id)
 		if err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusInternalServerError)
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
 			return
 		}
 		if result == nil {
-			c.Status(http.StatusNotFound)
+			http.Error(w, infra.MakeHTTPErrorResponse("未找到", r), http.StatusNotFound)
 			return
 		}
-		c.JSON(http.StatusOK, result)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(result); err != nil {
+			log.Println(err.Error())
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
+		}
 	})
 
-	router.PUT("/core-api/production/product/:id", func(c *gin.Context) {
-		id := c.Param("id")
+	router.HandleFunc("PUT /core-api/production/product/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
 		var product schema.Product
-		if err := c.ShouldBindJSON(&product); err != nil {
+		if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusBadRequest)
+			http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
 			return
 		}
 		product.ID = id
 		if err := productService.Update(product); err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusInternalServerError)
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
 			return
 		}
-		c.Status(http.StatusOK)
+		w.WriteHeader(http.StatusOK)
 	})
 
-	router.GET("/core-api/production/bom", func(c *gin.Context) {
+	router.HandleFunc("GET /core-api/production/bom", func(w http.ResponseWriter, r *http.Request) {
 		result, err := bomService.GetMany()
 		if err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusInternalServerError)
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
 			return
 		}
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		if len(result) == 0 {
-			c.JSON(http.StatusOK, []map[string]interface{}{})
+			w.Write([]byte("[]"))
 			return
 		}
-		c.JSON(http.StatusOK, result)
+		if err := json.NewEncoder(w).Encode(result); err != nil {
+			log.Println(err.Error())
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
+		}
 	})
 
-	router.POST("/core-api/production/bom", func(c *gin.Context) {
+	router.HandleFunc("POST /core-api/production/bom", func(w http.ResponseWriter, r *http.Request) {
 		var body schema.Bom
-		if err := c.ShouldBindJSON(&body); err != nil {
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			log.Println(err.Error())
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
 			return
 		}
 		if err := bomService.Create(&body); err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusInternalServerError)
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
 			return
 		}
-		c.Status(http.StatusCreated)
+		w.WriteHeader(http.StatusCreated)
 	})
 
-	router.GET("/core-api/production/process-route", func(c *gin.Context) {
+	router.HandleFunc("GET /core-api/production/process-route", func(w http.ResponseWriter, r *http.Request) {
 		result, err := processRouteService.GetMany()
 		if err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusInternalServerError)
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
 			return
 		}
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		if len(result) == 0 {
-			c.JSON(http.StatusOK, []map[string]interface{}{})
+			w.Write([]byte("[]"))
 			return
 		}
-		c.JSON(http.StatusOK, result)
+		if err := json.NewEncoder(w).Encode(result); err != nil {
+			log.Println(err.Error())
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
+		}
 	})
 
-	router.POST("/core-api/production/process-route", func(c *gin.Context) {
+	router.HandleFunc("POST /core-api/production/process-route", func(w http.ResponseWriter, r *http.Request) {
 		var body schema.ProcessRoute
-		if err := c.ShouldBindJSON(&body); err != nil {
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			log.Println(err.Error())
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
 			return
 		}
 		if err := processRouteService.Create(&body); err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusInternalServerError)
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
 			return
 		}
-		c.Status(http.StatusCreated)
+		w.WriteHeader(http.StatusCreated)
 	})
 
-	router.GET("/core-api/production/process-route/:id", func(c *gin.Context) {
-		id := c.Param("id")
+	router.HandleFunc("GET /core-api/production/process-route/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
 		result, err := processRouteService.GetOne(id)
 		if err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusInternalServerError)
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
 			return
 		}
 		if result == nil {
-			c.Status(http.StatusNotFound)
+			http.Error(w, infra.MakeHTTPErrorResponse("未找到", r), http.StatusNotFound)
 			return
 		}
-		c.JSON(http.StatusOK, result)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(result); err != nil {
+			log.Println(err.Error())
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
+		}
 	})
 
-	router.GET("/core-api/production/procedure", func(c *gin.Context) {
-		option := c.DefaultQuery("option", "")
+	router.HandleFunc("GET /core-api/production/procedure", func(w http.ResponseWriter, r *http.Request) {
+		option := r.URL.Query().Get("option")
 		if option == "" {
 			result, err := procedureService.GetMany([][]string{})
 			if err != nil {
 				log.Println(err.Error())
-				c.Status(http.StatusInternalServerError)
+				http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
 				return
 			}
+			w.Header().Set("content-type", "application/json")
+			w.WriteHeader(http.StatusOK)
 			if len(result) == 0 {
-				c.JSON(http.StatusOK, []map[string]interface{}{})
+				w.Write([]byte("[]"))
 				return
 			}
-			c.JSON(http.StatusOK, result)
+			if err := json.NewEncoder(w).Encode(result); err != nil {
+				log.Println(err.Error())
+				http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
+			}
+			return
 		} else if option == "default-filter" {
-			log.Println(c.DefaultQuery("filter", ""))
-			filter := c.DefaultQuery("filter", "")
+			filter := r.URL.Query().Get("filter")
 			if filter == "" {
-				c.Status(http.StatusBadRequest)
+				http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
 				return
 			}
 			f, err := infra.ParseQueryString2DefaultFilter(filter)
 			if err != nil {
 				log.Println(err.Error())
-				c.Status(http.StatusBadRequest)
+				http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
 				return
 			}
 			result, err := procedureService.GetMany(f)
 			if err != nil {
 				log.Println(err.Error())
-				c.Status(http.StatusBadRequest)
+				http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
 				return
 			}
+			w.Header().Set("content-type", "application/json")
+			w.WriteHeader(http.StatusOK)
 			if len(result) == 0 {
-				c.JSON(http.StatusOK, []map[string]interface{}{})
+				w.Write([]byte("[]"))
 				return
 			}
-			c.JSON(http.StatusOK, result)
+			if err := json.NewEncoder(w).Encode(result); err != nil {
+				log.Println(err.Error())
+				http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
+			}
+			return
 		} else {
-			c.Status(http.StatusBadRequest)
+			http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
 		}
 	})
 
-	router.POST("/core-api/production/procedure", func(c *gin.Context) {
+	router.HandleFunc("POST /core-api/production/procedure", func(w http.ResponseWriter, r *http.Request) {
 		var body schema.Procedure
-		if err := c.ShouldBindJSON(&body); err != nil {
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			log.Println(err.Error())
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
 			return
 		}
 		if err := procedureService.Create(&body); err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusInternalServerError)
+			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
 			return
 		}
-		c.Status(http.StatusCreated)
+		w.WriteHeader(http.StatusCreated)
 	})
 }

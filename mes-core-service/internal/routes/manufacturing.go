@@ -2,16 +2,14 @@ package routes
 
 import (
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
-func SetupManufacturingRoutes(router *gin.Engine) {
-	router.GET("/core-api/manufacturing/equipment", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Equipment"})
+func SetupManufacturingRoutes(router *http.ServeMux) {
+	router.HandleFunc("GET /core-api/manufacturing/equipment", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Equipment"))
 	})
 
-	router.GET("/core-api/manufacturing/qc", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "QC"})
+	router.HandleFunc("GET /core-api/manufacuring/qc", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("QC"))
 	})
 }

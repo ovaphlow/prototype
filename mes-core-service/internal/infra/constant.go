@@ -1,12 +1,29 @@
 package infra
 
 import (
+	"encoding/json"
 	"log"
+	"net/http"
 	"strconv"
 	"strings"
 )
 
 var SCHEMA_NAME string = "mes"
+
+func MakeHTTPErrorResponse(title string, r *http.Request) string {
+	res := map[string]string{
+		"type":     "about:blank",
+		"title":    title,
+		"detail":   "",
+		"instance": r.Method + " " + r.RequestURI,
+	}
+	result, err := json.Marshal(res)
+	if err != nil {
+		log.Println("Error marshalling HTTP error response:", err)
+		return ""
+	}
+	return string(result)
+}
 
 func ParseQueryString2DefaultFilter(qs string) ([][]string, error) {
 	result := [][]string{}

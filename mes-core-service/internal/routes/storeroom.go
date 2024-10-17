@@ -2,20 +2,18 @@ package routes
 
 import (
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
-func SetupStoreroomRoutes(router *gin.Engine) {
-	router.GET("/core-api/storeroom/raw-material", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Storeroom"})
+func SetupStoreroomRoutes(router *http.ServeMux) {
+	router.HandleFunc("GET /core-api/storeroom/raw-material", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Storeroom"))
 	})
 
-	router.GET("/core-api/storeroom/semi-finished", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Semi-Finished"})
+	router.HandleFunc("GET /core-api/storeroom/semi-finished", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Semi-Finished"))
 	})
 
-	router.GET("/core-api/storeroom/finished", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Finished"})
+	router.HandleFunc("GET /core-api/storeroom/finished", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Finished"))
 	})
 }

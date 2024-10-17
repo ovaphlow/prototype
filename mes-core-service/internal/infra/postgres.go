@@ -15,6 +15,7 @@ import (
 var Postgres *sql.DB
 
 func InitPostgres() {
+	log.Println("初始化数据库连接")
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal(err.Error())
