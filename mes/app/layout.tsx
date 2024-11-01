@@ -60,7 +60,7 @@ export default function RootLayout({
                             <h2 className="menu-title">生产计划与调度</h2>
                             <ul>
                                 <li>
-                                    <a>订单</a>
+                                    <Link href="/order">订单</Link>
                                 </li>
                                 <li>
                                     <a>生产计划</a>
