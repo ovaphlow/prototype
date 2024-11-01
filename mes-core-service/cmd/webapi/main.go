@@ -12,5 +12,5 @@ func init() {
 }
 
 func main() {
-	server.HTTPServe("8088")
+	server.HTTPServe(":8088")
 }
