@@ -31,21 +31,27 @@ func (s *OrderApplicationService) Create(data map[string]interface{}) error {
 	if err != nil {
 		return err
 	}
-	now := time.Now()
+	now := time.Now().Format("2006-01-02 15:04:05-07")
 	state := map[string]string{
-		"created_at": now.Format(time.RFC3339),
+		"created_at": now,
 	}
 	stateJson, err := json.Marshal(state)
 	if err != nil {
 		return err
 	}
+
+	detailJson, err := json.Marshal(data["detail"])
+	if err != nil {
+		return err
+	}
+
 	err = infra.NewSQLSaveBuilder(infra.Postgres, &infra.SCHEMA_NAME, &schema.OrderTableName).Save(map[string]interface{}{
 		"id":         id,
 		"time":       now,
 		"state":      string(stateJson),
 		"product_id": data["product_id"],
 		"due_date":   data["due_date"],
-		"detail":     data["detail"],
+		"detail":     string(detailJson), // Use the JSON string here
 	})
 	if err != nil {
 		return err

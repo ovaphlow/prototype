@@ -20,7 +20,8 @@ async function getProductDetail(id: string): Promise<Product> {
     }
 }
 
-export default async function ProductDetail({ params }: { params: { slug: string[] } }) {
+export default async function ProductDetail(props: { params: Promise<{ slug: string[] }> }) {
+    const params = await props.params;
     const product = await getProductDetail(params.slug[0])
 
     return (

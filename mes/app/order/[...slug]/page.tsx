@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { Form } from '../component.client'
-import { Order } from '../api'
 import { format } from 'date-fns'
 
 async function loadData(id: string) {
@@ -11,7 +10,7 @@ async function loadData(id: string) {
             time: format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX"),
             state: '{}',
             product_id: '',
-            detail: '',
+            detail: '{}',
             due_date: format(new Date(), 'yyyy-MM-dd'),
         }
     } else {
@@ -20,13 +19,14 @@ async function loadData(id: string) {
             time: format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX"),
             state: '{}',
             product_id: '',
-            detail: '',
+            detail: '{}',
             due_date: '',
         }
     }
 }
 
-export default async function Page({ params }: { params: { slug: string[] } }) {
+export default async function Page(props: { params: Promise<{ slug: string[] }> }) {
+    const params = await props.params;
     const order = await loadData(params.slug[0])
 
     return (

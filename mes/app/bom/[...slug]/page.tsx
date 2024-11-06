@@ -18,7 +18,8 @@ async function getBomDetail(id: string): Promise<Bom> {
     }
 }
 
-export default async function BomDetail({ params }: { params: { slug: string[] } }) {
+export default async function BomDetail(props: { params: Promise<{ slug: string[] }> }) {
+    const params = await props.params;
     const bom = await getBomDetail(params.slug[0])
 
     return (

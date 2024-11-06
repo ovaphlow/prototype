@@ -1,4 +1,4 @@
-import { CORE_SERVICE_URI_PREFIX } from '@/constant/webapi'
+import { CORE_SERVICE_URI_PREFIX, ResponseRFC9457 } from '../../constant/webapi'
 
 export type Order = {
     id: string
@@ -9,15 +9,26 @@ export type Order = {
     due_date: string
 }
 
-export async function saveOrder(order: Order): Promise<void> {
+export async function saveOrder(_prevState: ResponseRFC9457, formData: FormData) {
+    const raw = {
+        product_id: formData.get('product_id') as string,
+        due_date: formData.get('due_date') as string,
+        detail: {
+            quantity: Number(formData.get('quantity')),
+        },
+    }
+    if (!raw['product_id']) {
+        return { type: 'about:blank', title: '请选择产品', status: 400, detail: '', instance: '' }
+    }
     const response = await fetch(`${CORE_SERVICE_URI_PREFIX}/order`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(order),
+        body: JSON.stringify(raw),
     })
-    if (!response.ok) {
-        throw new Error('保存数据失败')
+    if (response.status >= 400) {
+        return { type: 'about:blank', title: '服务器错误', status: 500, detail: '', instance: '' }
     }
+    return { type: 'about:blank', title: '数据已提交至服务器 即将自动跳转', status: 201, detail: '', instance: '' }
 }

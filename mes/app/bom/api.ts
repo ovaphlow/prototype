@@ -1,4 +1,4 @@
-import { CORE_SERVICE_URI_PREFIX } from "@/constant/webapi"
+import { CORE_SERVICE_URI_PREFIX } from "../../constant/webapi"
 
 export type Bom = {
     id: string

@@ -22,7 +22,8 @@ async function loadData(id: string, process_route_id: string) {
     }
 }
 
-export default async function Page({ params }: { params: { slug: string[] } }) {
+export default async function Page(props: { params: Promise<{ slug: string[] }> }) {
+    const params = await props.params;
     const [id, process_route_id] = params.slug
     const procedure = await loadData(id, process_route_id)
 

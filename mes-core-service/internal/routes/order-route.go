@@ -18,6 +18,7 @@ func SetupOrderRoutes(router *http.ServeMux) {
 			http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
 			return
 		}
+		log.Println(data)
 		if err := orderService.Create(data); err != nil {
 			log.Println(err.Error())
 			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)

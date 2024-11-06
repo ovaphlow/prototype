@@ -3,7 +3,7 @@ import { getProcessRoute, ProcessRoute } from '../api'
 import { Suspense } from 'react'
 import { Form } from '../component.client'
 import Link from 'next/link'
-import { getProcedureList, Procedure } from '@/app/procedure/api'
+import { getProcedureList, Procedure } from '../../../app/procedure/api'
 
 async function loadData(id: string) {
     if (id === '0') {
@@ -26,7 +26,8 @@ async function loadData(id: string) {
     }
 }
 
-export default async function Page({ params }: { params: { slug: string[] } }) {
+export default async function Page(props: { params: Promise<{ slug: string[] }> }) {
+    const params = await props.params;
     const [route, procedures] = await loadData(params.slug[0])
 
     return (
