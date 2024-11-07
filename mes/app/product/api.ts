@@ -29,8 +29,8 @@ export async function getProduct(id: string): Promise<Product> {
     return response.json()
 }
 
-export async function getProductList(): Promise<Product[]> {
-    const response = await fetch(`${CORE_SERVICE_URI_PREFIX}/production/product`, { cache: 'no-cache' })
+export async function getProductList(param: string): Promise<Product[]> {
+    const response = await fetch(`${CORE_SERVICE_URI_PREFIX}/production/product${param ? param : ''}`, { cache: 'no-cache' })
     if (!response.ok) {
         throw new Error('获取数据失败')
     }

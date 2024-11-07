@@ -15,7 +15,7 @@ func HTTPServe(addr string) {
 	})
 
 	routes.SetupManufacturingRoutes(router)
-	routes.SetupOrderRoutes(router)
+	routes.SetupOrderRoutes(router, "/core-api")
 	routes.SetupProductionRoutes(router)
 	routes.SetupScheduleRoutes(router)
 	routes.SetupStoreroomRoutes(router)

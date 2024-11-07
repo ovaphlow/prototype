@@ -9,6 +9,40 @@ export type Order = {
     due_date: string
 }
 
+export async function activeOrder(_prevState: ResponseRFC9457, id: string) {
+    const response = await fetch(`${CORE_SERVICE_URI_PREFIX}/order/${id}/active`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    if (response.status >= 400) {
+        return { type: 'about:blank', title: '服务器错误', status: 500, detail: '', instance: '' }
+    }
+    return { type: 'about:blank', title: '数据已提交至服务器', status: 200, detail: '', instance: '' }
+}
+
+export async function suspendOrder(_prevState: ResponseRFC9457, id: string) {
+    const response = await fetch(`${CORE_SERVICE_URI_PREFIX}/order/${id}/suspend`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    if (response.status >= 400) {
+        return { type: 'about:blank', title: '服务器错误', status: 500, detail: '', instance: '' }
+    }
+    return { type: 'about:blank', title: '数据已提交至服务器', status: 200, detail: '', instance: '' }
+}
+
+export async function getOrderList() {
+    const response = await fetch(`${CORE_SERVICE_URI_PREFIX}/order`)
+    if (response.status >= 400) {
+        return { type: 'about:blank', title: '服务器错误', status: 500, detail: '', instance: '' }
+    }
+    return response.json()
+}
+
 export async function saveOrder(_prevState: ResponseRFC9457, formData: FormData) {
     const raw = {
         product_id: formData.get('product_id') as string,

@@ -17,21 +17,55 @@ func SetupProductionRoutes(router *http.ServeMux) {
 	procedureService := production.NewProcedureApplicationService(infra.Postgres)
 
 	router.HandleFunc("GET /core-api/production/product", func(w http.ResponseWriter, r *http.Request) {
-		result, err := productService.GetMany()
-		if err != nil {
-			log.Println(err.Error())
-			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
+		option := r.URL.Query().Get("option")
+		if option == "" {
+			result, err := productService.GetMany([][]string{})
+			if err != nil {
+				log.Println(err.Error())
+				http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			if len(result) == 0 {
+				w.Write([]byte("[]"))
+				return
+			}
+			if err := json.NewEncoder(w).Encode(result); err != nil {
+				log.Println(err.Error())
+				http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
+			}
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		if len(result) == 0 {
-			w.Write([]byte("[]"))
+		if option == "default-filter" {
+			filter := r.URL.Query().Get("filter")
+			if filter == "" {
+				http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
+				return
+			}
+			f, err := infra.ParseQueryString2DefaultFilter(filter)
+			if err != nil {
+				log.Println(err.Error())
+				http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
+				return
+			}
+			result, err := productService.GetMany(f)
+			if err != nil {
+				log.Println(err.Error())
+				http.Error(w, infra.MakeHTTPErrorResponse("请求错误", r), http.StatusBadRequest)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			if len(result) == 0 {
+				w.Write([]byte("[]"))
+				return
+			}
+			if err := json.NewEncoder(w).Encode(result); err != nil {
+				log.Println(err.Error())
+				http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
+			}
 			return
-		}
-		if err := json.NewEncoder(w).Encode(result); err != nil {
-			log.Println(err.Error())
-			http.Error(w, infra.MakeHTTPErrorResponse("服务器错误", r), http.StatusInternalServerError)
 		}
 	})
 

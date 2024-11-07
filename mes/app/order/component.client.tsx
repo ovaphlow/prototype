@@ -1,9 +1,45 @@
 'use client'
 
-import { useActionState, useEffect, useState } from 'react'
-import { Order, saveOrder } from './api'
+import { useActionState, useEffect, startTransition } from 'react'
+import { activeOrder, Order, saveOrder, suspendOrder } from './api'
 import { useFormStatus } from 'react-dom'
 import { redirect } from 'next/navigation'
+
+export function ActiveButton({ id }: { id: string }) {
+    const [state, action] = useActionState(activeOrder, { type: '', title: '', status: 0, detail: '', instance: '' })
+
+    useEffect(() => {
+        if (state.status === 0 || state.status >= 400) return
+        location.reload()
+    }, [state])
+
+    return (
+        <button
+            onClick={() => startTransition(() => action(id))}
+            className="btn btn-outline btn-success btn-sm"
+        >
+            激活
+        </button>
+    )
+}
+
+export function SuspendButton({ id }: { id: string }) {
+    const [state, action] = useActionState(suspendOrder, { type: '', title: '', status: 0, detail: '', instance: '' })
+
+    useEffect(() => {
+        if (state.status === 0 || state.status >= 400) return
+        location.reload()
+    }, [state])
+
+    return (
+        <button
+            onClick={() => startTransition(() => action(id))}
+            className="btn btn-outline btn-error btn-sm"
+        >
+            挂起
+        </button>
+    )
+}
 
 export function Form({ initial }: { initial: Order }) {
     const [state, formAction] = useActionState(saveOrder, { type: '', title: '', status: 0, detail: '', instance: '' })

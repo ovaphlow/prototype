@@ -9,13 +9,25 @@ import (
 )
 
 type OrderApplicationService struct {
-	db *sql.DB
+	db   *sql.DB
+	repo *OrderRepo
 }
 
-func NewOrderApplicationService(db *sql.DB) *OrderApplicationService {
+func NewOrderApplicationService(db *sql.DB, repo *OrderRepo) *OrderApplicationService {
 	return &OrderApplicationService{
-		db: db,
+		db:   db,
+		repo: repo,
 	}
+}
+
+func (s *OrderApplicationService) Active(id string) error {
+	s.repo.UpdateStatusById("激活", id)
+	return nil
+}
+
+func (s *OrderApplicationService) Suspend(id string) error {
+	s.repo.UpdateStatusById("挂起", id)
+	return nil
 }
 
 func (s *OrderApplicationService) Get(id string) (map[string]interface{}, error) {
@@ -23,7 +35,20 @@ func (s *OrderApplicationService) Get(id string) (map[string]interface{}, error)
 }
 
 func (s *OrderApplicationService) GetMany() ([]map[string]interface{}, error) {
-	return nil, nil
+	builder, err := infra.NewSQLQueryBuilder(infra.Postgres, &infra.SCHEMA_NAME, &schema.OrderTableName).Select(nil)
+	if err != nil {
+		return nil, err
+	}
+	builder.Append("order by id desc")
+	rows, err := builder.Query()
+	if err != nil {
+		return nil, err
+	}
+	result, err := infra.SQLRows2Map(rows)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func (s *OrderApplicationService) Create(data map[string]interface{}) error {

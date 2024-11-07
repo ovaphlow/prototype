@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { getProductList } from './api'
 
 export default async function Product() {
-    const products = await getProductList()
+    const products = await getProductList('')
 
     return (
         <div className="flex flex-col p-4">

@@ -70,12 +70,16 @@ func (p *ProductApplicationService) GetOne(id string) (map[string]interface{}, e
 	return nil, nil
 }
 
-func (p *ProductApplicationService) GetMany() ([]map[string]interface{}, error) {
+func (p *ProductApplicationService) GetMany(filter [][]string) ([]map[string]interface{}, error) {
 	builder, err := infra.NewSQLQueryBuilder(infra.Postgres, &infra.SCHEMA_NAME, &ProductTableName).Select(nil)
 	if err != nil {
 		return nil, err
 	}
-	builder = builder.Append("order by time desc limit 20")
+	builder, err = builder.Where(filter)
+	if err != nil {
+		return nil, err
+	}
+	builder = builder.Append("order by time desc")
 	rows, err := builder.Query()
 	if err != nil {
 		return nil, err
