@@ -4,6 +4,8 @@ import { useActionState, useEffect, startTransition } from 'react'
 import { activeOrder, Order, saveOrder, suspendOrder } from './api'
 import { useFormStatus } from 'react-dom'
 import { redirect } from 'next/navigation'
+import IconStop from '@/icon/stop'
+import IconPlay from '@/icon/play'
 
 export function ActiveButton({ id }: { id: string }) {
     const [state, action] = useActionState(activeOrder, { type: '', title: '', status: 0, detail: '', instance: '' })
@@ -18,6 +20,7 @@ export function ActiveButton({ id }: { id: string }) {
             onClick={() => startTransition(() => action(id))}
             className="btn btn-outline btn-success btn-sm"
         >
+            <IconPlay size={16} color="white" />
             激活
         </button>
     )
@@ -36,6 +39,7 @@ export function SuspendButton({ id }: { id: string }) {
             onClick={() => startTransition(() => action(id))}
             className="btn btn-outline btn-error btn-sm"
         >
+            <IconStop size={16} color="white" />
             挂起
         </button>
     )

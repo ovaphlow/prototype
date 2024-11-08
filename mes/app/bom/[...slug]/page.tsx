@@ -24,7 +24,7 @@ export default async function BomDetail(props: { params: Promise<{ slug: string[
 
     return (
         <div className="flex flex-col p-4">
-            <div className="bg-base-100 m-4 p-4 rounded-lg shadow-xl border-2">
+            <div className="bg-base-200 m-4 p-4 rounded shadow border border-slate-600">
                 <Suspense fallback={<div>加载中</div>}>
                     <Form initialBom={bom} />
                 </Suspense>

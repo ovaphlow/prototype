@@ -9,7 +9,7 @@ const config: Config = {
     ],
     plugins: [daysyui],
     daisyui: {
-        themes: ["emerald"],
+        themes: ["emerald", "night"],
     },
 }
 

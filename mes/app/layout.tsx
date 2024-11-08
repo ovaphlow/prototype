@@ -13,13 +13,13 @@ export default function RootLayout({
     children: React.ReactNode
 }>) {
     return (
-        <html lang="zh" data-theme="emerald">
+        <html lang="zh" data-theme="night">
             <body className="flex min-h-screen">
-                <aside className="w-64 bg-base-200 fixed h-full overflow-y-auto">
-                    <h1 className="text-4xl font-bold bg-base-300 p-3" style={{ height: '64px' }}>
+                <aside className="w-64 bg-slate-800 fixed h-full overflow-y-auto">
+                    <h1 className="text-4xl font-bold p-3" style={{ height: '64px' }}>
                         MES
                     </h1>
-                    <ul className="menu bg-base-200 rounded-box w-64">
+                    <ul className="menu rounded-box w-64">
                         <li>
                             <h2 className="menu-title">首页</h2>
                             <ul>
@@ -101,7 +101,7 @@ export default function RootLayout({
                     </ul>
                 </aside>
                 <main className="flex flex-col flex-1" style={{ marginLeft: '256px' }}>
-                    <header className="bg-base-200">
+                    <header className="bg-base-300">
                         <div className="navbar">
                             <div className="navbar-start"></div>
                             <div className="navbar-center">
@@ -131,7 +131,7 @@ export default function RootLayout({
                         </div>
                     </header>
                     <div className="flex-1">{children}</div>
-                    <footer className="footer footer-center bg-base-200 text-base-content p-4">
+                    <footer className="footer footer-center bg-base-300 text-base-content p-4">
                         <aside>
                             <p>Copyright © {new Date().getFullYear()} - All right reserved by ovaphlow.</p>
                         </aside>

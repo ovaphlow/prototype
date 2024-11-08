@@ -3,6 +3,7 @@ import { getOrderList, Order } from './api'
 import { format } from 'date-fns'
 import { getProductList } from '../product/api'
 import { ActiveButton, SuspendButton } from './component.client'
+import IconPlus from '@/icon/plus'
 
 export default async function Page() {
     const orders = await getOrderList()
@@ -15,7 +16,7 @@ export default async function Page() {
 
     return (
         <div className="flex flex-col p-4">
-            <div className="bg-base-100 m-4 p-4 rounded-lg shadow-xl border-2">
+            <div className="bg-base-200 m-4 p-4 rounded shadow border border-slate-600">
                 <div className="flex justify-between">
                     <h2 className="text-xl font-bold">订单</h2>
                     <span>
@@ -30,6 +31,8 @@ export default async function Page() {
                             <td>操作</td>
                             <td>交付时间</td>
                             <td>产品</td>
+                            <td>规格</td>
+                            <td>型号</td>
                             <td>数量</td>
                             <td>状态</td>
                         </tr>
@@ -37,12 +40,32 @@ export default async function Page() {
                     <tbody>
                         {orders.map((order: Order) => (
                             <tr key={order.id}>
-                                <td>
+                                <td className="flex gap-2">
                                     {JSON.parse(order.detail)?.status !== '激活' && <ActiveButton id={order.id} />}
                                     {JSON.parse(order.detail)?.status === '激活' && <SuspendButton id={order.id} />}
+                                    {JSON.parse(order.detail)?.status === '激活' && (
+                                        <Link href={`/order/${order.id}`} className="btn btn-outline btn-secondary btn-sm">
+                                            <IconPlus size={16} color="white" />
+                                            生产计划
+                                        </Link>
+                                    )}
                                 </td>
                                 <td>{format(order.due_date, 'yyyy-MM-dd')}</td>
                                 <td>{products.find((product) => product.id === order.product_id)?.name}</td>
+                                <td>
+                                    {
+                                        JSON.parse(
+                                            products.find((product) => product.id === order.product_id)?.detail || '{}',
+                                        ).spec
+                                    }
+                                </td>
+                                <td>
+                                    {
+                                        JSON.parse(
+                                            products.find((product) => product.id === order.product_id)?.detail || '{}',
+                                        ).model
+                                    }
+                                </td>
                                 <td>{JSON.parse(order.detail)?.quantity}</td>
                                 <td>{JSON.parse(order.detail)?.status || '未激活'}</td>
                             </tr>

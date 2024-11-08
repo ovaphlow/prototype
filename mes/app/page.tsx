@@ -6,7 +6,7 @@ export default function Home() {
                 <span>DASHBOARD</span>
             </h1>
             <div className="flex gap-4 mt-2">
-                <div className="card card-compact bg-base-100 w-1/3 shadow-xl">
+                <div className="card card-compact bg-base-200 w-1/3 shadow border border-slate-600">
                     <figure>
                         <img
                             src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
@@ -21,7 +21,7 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
-                <div className="card card-compact bg-base-100 w-1/3 shadow-xl">
+                <div className="card card-compact bg-base-200 w-1/3 shadow border border-slate-600">
                     <figure>
                         <img
                             src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
@@ -36,7 +36,7 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
-                <div className="card card-compact bg-base-100 w-1/3 shadow-xl">
+                <div className="card card-compact bg-base-200 w-1/3 shadow-xl border border-slate-600">
                     <figure>
                         <img
                             src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"

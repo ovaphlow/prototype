@@ -32,7 +32,7 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
 
     return (
         <div className="flex flex-col p-4">
-            <div className="bg-base-100 m-4 p-4 rounded-lg shadow-xl border-2">
+            <div className="bg-base-200 m-4 p-4 rounded shadow border border-slate-600">
                 <Link href="/process-route" className="btn btn-outline btn-sm w-16 mb-4">
                     返回
                 </Link>
