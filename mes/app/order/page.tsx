@@ -44,7 +44,7 @@ export default async function Page() {
                                     {JSON.parse(order.detail)?.status !== '激活' && <ActiveButton id={order.id} />}
                                     {JSON.parse(order.detail)?.status === '激活' && <SuspendButton id={order.id} />}
                                     {JSON.parse(order.detail)?.status === '激活' && (
-                                        <Link href={`/order/${order.id}`} className="btn btn-outline btn-secondary btn-sm">
+                                        <Link href={`/schedule/0/${order.id}`} className="btn btn-outline btn-secondary btn-sm">
                                             <IconPlus size={16} color="white" />
                                             生产计划
                                         </Link>
