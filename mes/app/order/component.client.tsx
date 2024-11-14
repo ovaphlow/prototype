@@ -1,11 +1,78 @@
 'use client'
 
 import { useActionState, useEffect, startTransition } from 'react'
-import { activeOrder, Order, saveOrder, suspendOrder } from './api'
+import { activeOrder, Order, saveOrder, Schedule, suspendOrder } from './api'
 import { useFormStatus } from 'react-dom'
 import { redirect } from 'next/navigation'
 import IconStop from '@/icon/stop'
 import IconPlay from '@/icon/play'
+import Link from 'next/link'
+
+export function ScheduleForm({ initial }: { initial: Schedule }) {
+    return (
+        <form className="flex flex-col gap-2 w-full">
+            <div className="grid gap-1 w-full">
+                <label htmlFor="starting_date">日期</label>
+                <input
+                    type="date"
+                    name="starting_date"
+                    id="starting_date"
+                    defaultValue={initial.starting_date || new Date().toISOString().split('T')[0]}
+                    className="input input-bordered"
+                />
+            </div>
+            <div className="grid gap-1 w-full">
+                <label htmlFor="workshop">车间</label>
+                <input
+                    type="text"
+                    name="workshop"
+                    id="workshop"
+                    defaultValue={JSON.parse(initial.detail).workshop || ''}
+                    className="input input-bordered"
+                />
+            </div>
+            <div className="grid gap-1 w-full">
+                <label htmlFor="line">生产线</label>
+                <input
+                    type="text"
+                    name="line"
+                    id="line"
+                    defaultValue={JSON.parse(initial.detail).line || ''}
+                    className="input input-bordered"
+                />
+            </div>
+            <div className="grid gap-1 w-full">
+                <label htmlFor="bom_raw">原材料</label>
+                <input
+                    type="text"
+                    name="bom_raw"
+                    id="bom_raw"
+                    defaultValue={JSON.parse(initial.detail).line || ''}
+                    className="input input-bordered"
+                />
+            </div>
+            <div className="grid gap-1 w-full">
+                <label htmlFor="bom_semi">产出品</label>
+                <input
+                    type="text"
+                    name="bom_semi"
+                    id="bom_semi"
+                    defaultValue={JSON.parse(initial.detail).line || ''}
+                    className="input input-bordered"
+                />
+            </div>
+            <button className="btn btn-primary">提交</button>
+            <p className="text-center">
+                <button onClick={() => history.back()} className="btn btn-link px-2 py-1">
+                    返回至订单
+                </button>
+                <Link href="/schedule" className="btn btn-link px-2 py-1">
+                    返回至生产计划
+                </Link>
+            </p>
+        </form>
+    )
+}
 
 export function ActiveButton({ id }: { id: string }) {
     const [state, action] = useActionState(activeOrder, { type: '', title: '', status: 0, detail: '', instance: '' })
@@ -16,10 +83,7 @@ export function ActiveButton({ id }: { id: string }) {
     }, [state])
 
     return (
-        <button
-            onClick={() => startTransition(() => action(id))}
-            className="btn btn-outline btn-success btn-sm"
-        >
+        <button onClick={() => startTransition(() => action(id))} className="btn btn-outline btn-success btn-sm">
             <IconPlay size={16} color="white" />
             激活
         </button>
@@ -35,17 +99,14 @@ export function SuspendButton({ id }: { id: string }) {
     }, [state])
 
     return (
-        <button
-            onClick={() => startTransition(() => action(id))}
-            className="btn btn-outline btn-error btn-sm"
-        >
+        <button onClick={() => startTransition(() => action(id))} className="btn btn-outline btn-error btn-sm">
             <IconStop size={16} color="white" />
             挂起
         </button>
     )
 }
 
-export function Form({ initial }: { initial: Order }) {
+export function OrderForm({ initial }: { initial: Order }) {
     const [state, formAction] = useActionState(saveOrder, { type: '', title: '', status: 0, detail: '', instance: '' })
 
     useEffect(() => {
@@ -91,7 +152,9 @@ export function Form({ initial }: { initial: Order }) {
                 />
             </div>
             <SubmitButton />
-            <p role="status" className="text-center">{state?.title}</p>
+            <p role="status" className="text-center">
+                {state?.title}
+            </p>
         </form>
     )
 }

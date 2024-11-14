@@ -9,6 +9,18 @@ export type Order = {
     due_date: string
 }
 
+export interface Schedule {
+    id: string
+    time: string
+    state: string
+    starting_date: string
+    order_id: string
+    product_id: string
+    bom_id_raw: string
+    bom_id_semi: string
+    detail: string // workshop, line
+}
+
 export async function activeOrder(_prevState: ResponseRFC9457, id: string) {
     const response = await fetch(`${CORE_SERVICE_URI_PREFIX}/order/${id}/active`, {
         method: 'PUT',
