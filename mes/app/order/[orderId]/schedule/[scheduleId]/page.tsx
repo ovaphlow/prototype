@@ -1,5 +1,5 @@
-import { ScheduleForm } from '@/app/order/component.client'
-import Link from 'next/link'
+import { BackwardButton } from '../../../../component.client';
+import { ScheduleForm } from '../../../component.client'
 
 export default async function Page({ params }: { params: Promise<{ orderId: string; scheduleId: string }> }) {
     const { orderId, scheduleId } = await params
@@ -9,9 +9,7 @@ export default async function Page({ params }: { params: Promise<{ orderId: stri
             <div className="bg-base-200 m-4 p-4 rounded shadow border border-slate-600 flex flex-col gap-4">
                 <div className="flex justify-between">
                     <h1 className="text-2xl font-bold">生产计划</h1>
-                    <Link href="/order" className="btn btn-outline btn-sm w-16 mb-4">
-                        返回
-                    </Link>
+                    <BackwardButton />
                 </div>
                 <ScheduleForm
                     initial={{

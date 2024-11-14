@@ -63,9 +63,9 @@ export function ScheduleForm({ initial }: { initial: Schedule }) {
             </div>
             <button className="btn btn-primary">提交</button>
             <p className="text-center">
-                <button onClick={() => history.back()} className="btn btn-link px-2 py-1">
+                <Link href="/order" className="btn btn-link px-2 py-1">
                     返回至订单
-                </button>
+                </Link>
                 <Link href="/schedule" className="btn btn-link px-2 py-1">
                     返回至生产计划
                 </Link>
