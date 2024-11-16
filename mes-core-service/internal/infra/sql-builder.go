@@ -74,8 +74,7 @@ func (qb *SQLQueryBuilder) Where(conditions [][]string) (*SQLQueryBuilder, error
 			}
 			c = append(c, condition[1]+" = $"+strconv.Itoa(len(qb.parameters)+1))
 			qb.parameters = append(qb.parameters, condition[2])
-		}
-		if condition[0] == "in" {
+		} else if condition[0] == "in" {
 			if len(condition) <= 2 {
 				continue
 			}
@@ -86,6 +85,77 @@ func (qb *SQLQueryBuilder) Where(conditions [][]string) (*SQLQueryBuilder, error
 			}
 			c = append(c, condition[1]+" in ("+strings.Join(placeholders, ", ")+")")
 			qb.parameters = append(qb.parameters, values...)
+		} else if condition[0] == "array-contain" {
+			if len(condition) < 3 {
+				continue
+			}
+			c = append(c, "jsonb_array_elements("+condition[1]+") @> $"+strconv.Itoa(len(qb.parameters)+1))
+			qb.parameters = append(qb.parameters, condition[2])
+		} else if condition[0] == "object-contain" {
+			if len(condition) < 3 {
+				continue
+			}
+			c = append(c, condition[1]+" @> $"+strconv.Itoa(len(qb.parameters)+1))
+			qb.parameters = append(qb.parameters, condition[2])
+		} else if condition[0] == "like" {
+			if len(condition) < 3 {
+				continue
+			}
+			c = append(c, condition[1]+" like $"+strconv.Itoa(len(qb.parameters)+1))
+			qb.parameters = append(qb.parameters, condition[2])
+		} else if condition[0] == "greater" {
+			if len(condition) < 3 {
+				continue
+			}
+			c = append(c, condition[1]+" > $"+strconv.Itoa(len(qb.parameters)+1))
+			qb.parameters = append(qb.parameters, condition[2])
+		} else if condition[0] == "less" {
+			if len(condition) < 3 {
+				continue
+			}
+			c = append(c, condition[1]+" < $"+strconv.Itoa(len(qb.parameters)+1))
+			qb.parameters = append(qb.parameters, condition[2])
+		} else if condition[0] == "greater-equal" {
+			if len(condition) < 3 {
+				continue
+			}
+			c = append(c, condition[1]+" >= $"+strconv.Itoa(len(qb.parameters)+1))
+			qb.parameters = append(qb.parameters, condition[2])
+		} else if condition[0] == "less-equal" {
+			if len(condition) < 3 {
+				continue
+			}
+			c = append(c, condition[1]+" <= $"+strconv.Itoa(len(qb.parameters)+1))
+			qb.parameters = append(qb.parameters, condition[2])
+		} else if condition[0] == "is-null" {
+			if len(condition) < 2 {
+				continue
+			}
+			c = append(c, condition[1]+" is null")
+		} else if condition[0] == "is-not-null" {
+			if len(condition) < 2 {
+				continue
+			}
+			c = append(c, condition[1]+" is not null")
+		} else if condition[0] == "not-equal" {
+			if len(condition) < 3 {
+				continue
+			}
+			c = append(c, condition[1]+" != $"+strconv.Itoa(len(qb.parameters)+1))
+			qb.parameters = append(qb.parameters, condition[2])
+		} else if condition[0] == "not-in" {
+			if len(condition) <= 2 {
+				continue
+			}
+			values := condition[2:]
+			placeholders := make([]string, len(values))
+			for i := range values {
+				placeholders[i] = "$" + strconv.Itoa(i+1)
+			}
+			c = append(c, condition[1]+" not in ("+strings.Join(placeholders, ", ")+")")
+			qb.parameters = append(qb.parameters, values...)
+		} else {
+			return nil, fmt.Errorf("unknown condition: %s", condition[0])
 		}
 	}
 	if len(c) > 0 {

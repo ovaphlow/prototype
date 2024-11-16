@@ -25,6 +25,39 @@ func MakeHTTPErrorResponse(title string, r *http.Request) string {
 	return string(result)
 }
 
+func parseQueryString(filter []string) ([]string, error) {
+	if filter[0] == "equal" {
+		c, err := strconv.Atoi(filter[1])
+		if err != nil {
+			return nil, err
+		}
+		v := filter[2 : 2+c]
+		return append([]string{"equal"}, v...), nil
+	} else if filter[0] == "not-equal" {
+		c, err := strconv.Atoi(filter[1])
+		if err != nil {
+			return nil, err
+		}
+		v := filter[2 : 2+c]
+		return append([]string{"not-equal"}, v...), nil
+	} else if filter[0] == "in" {
+		c, err := strconv.Atoi(filter[1])
+		if err != nil {
+			return nil, err
+		}
+		v := filter[2 : 2+c]
+		return append([]string{"in"}, v...), nil
+	} else if filter[0] == "not-in" {
+		c, err := strconv.Atoi(filter[1])
+		if err != nil {
+			return nil, err
+		}
+		v := filter[2 : 2+c]
+		return append([]string{"not-in"}, v...), nil
+	}
+	return nil, nil
+}
+
 func ParseQueryString2DefaultFilter(qs string) ([][]string, error) {
 	result := [][]string{}
 	if qs == "" {
@@ -32,13 +65,18 @@ func ParseQueryString2DefaultFilter(qs string) ([][]string, error) {
 	}
 	filter := strings.Split(qs, ",")
 
-	if filter[0] == "equal" {
-		c, err := strconv.Atoi(filter[1])
+	for len(filter) > 0 {
+		qty, err := strconv.Atoi(filter[1])
 		if err != nil {
 			return nil, err
 		}
-		v := filter[2 : 2+c]
-		result = append(result, append([]string{"equal"}, v...))
+		p := filter[0 : 2+qty]
+		parameter, err := parseQueryString(p)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, parameter)
+		filter = filter[2+qty:]
 	}
 	log.Println(result)
 	return result, nil

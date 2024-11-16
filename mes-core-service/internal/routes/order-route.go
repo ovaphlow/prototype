@@ -10,7 +10,7 @@ import (
 
 func SetupOrderRoutes(router *http.ServeMux, prefix string) {
 	orderRepo := order.NewOrderRepo(infra.Postgres)
-	orderService := order.NewOrderApplicationService(infra.Postgres, orderRepo)
+	orderService := order.NewApplicationService(infra.Postgres, orderRepo)
 
 	router.HandleFunc("PUT "+prefix+"/order/{id}/{action}", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")

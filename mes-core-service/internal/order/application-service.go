@@ -8,33 +8,33 @@ import (
 	"time"
 )
 
-type OrderApplicationService struct {
-	db   *sql.DB
-	repo *OrderRepo
+type ApplicationService struct {
+	db        *sql.DB
+	orderRepo *OrderRepo
 }
 
-func NewOrderApplicationService(db *sql.DB, repo *OrderRepo) *OrderApplicationService {
-	return &OrderApplicationService{
-		db:   db,
-		repo: repo,
+func NewApplicationService(db *sql.DB, orderRepo *OrderRepo) *ApplicationService {
+	return &ApplicationService{
+		db:        db,
+		orderRepo: orderRepo,
 	}
 }
 
-func (s *OrderApplicationService) Active(id string) error {
-	s.repo.UpdateStatusById("激活", id)
+func (s *ApplicationService) Active(id string) error {
+	s.orderRepo.UpdateStatusById("激活", id)
 	return nil
 }
 
-func (s *OrderApplicationService) Suspend(id string) error {
-	s.repo.UpdateStatusById("挂起", id)
+func (s *ApplicationService) Suspend(id string) error {
+	s.orderRepo.UpdateStatusById("挂起", id)
 	return nil
 }
 
-func (s *OrderApplicationService) Get(id string) (map[string]interface{}, error) {
+func (s *ApplicationService) Get(id string) (map[string]interface{}, error) {
 	return nil, nil
 }
 
-func (s *OrderApplicationService) GetMany() ([]map[string]interface{}, error) {
+func (s *ApplicationService) GetMany() ([]map[string]interface{}, error) {
 	builder, err := infra.NewSQLQueryBuilder(infra.Postgres, &infra.SCHEMA_NAME, &schema.OrderTableName).Select(nil)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (s *OrderApplicationService) GetMany() ([]map[string]interface{}, error) {
 	return result, nil
 }
 
-func (s *OrderApplicationService) Create(data map[string]interface{}) error {
+func (s *ApplicationService) Create(data map[string]interface{}) error {
 	id, err := infra.GenerateKsuid()
 	if err != nil {
 		return err
