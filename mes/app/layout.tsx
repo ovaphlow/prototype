@@ -63,10 +63,10 @@ export default function RootLayout({
                                     <Link href="/order">订单</Link>
                                 </li>
                                 <li>
-                                    <a>生产计划</a>
+                                    <Link href="/schedule">生产计划</Link>
                                 </li>
                                 <li>
-                                    <a>调度指令</a>
+                                    <Link href="/dispatch">调度指令</Link>
                                 </li>
                             </ul>
                         </li>

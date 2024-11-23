@@ -1,16 +1,35 @@
 'use client'
 
 import { useActionState, useEffect, startTransition } from 'react'
-import { activeOrder, Order, saveOrder, Schedule, suspendOrder } from './api'
+import { activeOrder, Order, saveOrder, suspendOrder } from './api'
 import { useFormStatus } from 'react-dom'
 import { redirect } from 'next/navigation'
-import IconStop from '@/icon/stop'
-import IconPlay from '@/icon/play'
+import IconStop from '../../icon/stop'
+import IconPlay from '../../icon/play'
 import Link from 'next/link'
+import { saveSchedule, Schedule } from '../schedule/api'
 
 export function ScheduleForm({ initial }: { initial: Schedule }) {
+    const [state, formAction] = useActionState(saveSchedule, {
+        type: '',
+        title: '',
+        status: 0,
+        detail: '',
+        instance: '',
+    })
+
+    useEffect(() => {
+        if (state.status === 0 || state.status >= 400) return
+        const timer = setTimeout(() => {
+            redirect('/order')
+        }, 3000)
+        return () => clearTimeout(timer)
+    }, [state])
+
     return (
-        <form className="flex flex-col gap-2 w-full">
+        <form className="flex flex-col gap-2 w-full" action={formAction}>
+            <input type="hidden" name="order_id" value={initial.order_id} />
+            <input type="hidden" name="product_id" value={initial.product_id} />
             <div className="grid gap-1 w-full">
                 <label htmlFor="starting_date">日期</label>
                 <input
@@ -42,22 +61,22 @@ export function ScheduleForm({ initial }: { initial: Schedule }) {
                 />
             </div>
             <div className="grid gap-1 w-full">
-                <label htmlFor="bom_raw">原材料</label>
+                <label htmlFor="bom_id_raw">原材料</label>
                 <input
                     type="text"
-                    name="bom_raw"
+                    name="bom_id_raw"
                     id="bom_raw"
-                    defaultValue={JSON.parse(initial.detail).line || ''}
+                    defaultValue={initial.bom_id_raw}
                     className="input input-bordered"
                 />
             </div>
             <div className="grid gap-1 w-full">
-                <label htmlFor="bom_semi">产出品</label>
+                <label htmlFor="bom_id_semi">产出品</label>
                 <input
                     type="text"
-                    name="bom_semi"
+                    name="bom_id_semi"
                     id="bom_semi"
-                    defaultValue={JSON.parse(initial.detail).line || ''}
+                    defaultValue={initial.bom_id_semi}
                     className="input input-bordered"
                 />
             </div>
